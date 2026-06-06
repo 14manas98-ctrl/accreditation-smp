@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ru" data-lang="kaz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Бұйрықтар — СМП</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .proto-card {
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .proto-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .proto-color-bar {
+      width: 5px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      align-self: stretch;
+      min-height: 50px;
+    }
+
+    .proto-names { flex: 1; }
+
+    .proto-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .proto-subtitle {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      font-weight: 500;
+      margin-top: 3px;
+    }
+
+    .proto-ref {
+      font-size: 10px;
+      color: #aaa;
+      margin-top: 4px;
+    }
+
+    .proto-body {
+      display: none;
+      border-top: 1px solid rgba(0,0,0,0.07);
+      padding: 20px;
+    }
+
+    .proto-card.open .proto-body { display: block; animation: fadeIn 0.2s ease; }
+    .proto-card.open .card-chevron { transform: rotate(180deg); }
+
+    .proto-section-title {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .proto-section-title.mt { margin-top: 20px; }
+
+    /* Prikaz metadata block */
+    .prikaz-meta {
+      background: rgba(255,255,255,0.6);
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+    }
+
+    .prikaz-meta-row {
+      font-size: 12px;
+      color: var(--text);
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      line-height: 1.5;
+    }
+
+    .prikaz-meta-row:last-child { border-bottom: none; }
+
+    .prikaz-meta-label {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    /* Prikaz bullet list */
+    .prikaz-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .prikaz-list li {
+      font-size: 12px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(0,0,0,0.07);
+      line-height: 1.5;
+      display: flex;
+      gap: 8px;
+    }
+
+    .prikaz-list li::before {
+      content: '—';
+      flex-shrink: 0;
+      color: var(--muted);
+    }
+
+    /* Color variants */
+    .pk-red .proto-header,
+    .pk-red .proto-body { background: #ffebee; }
+    .pk-red .proto-color-bar { background: #e53935; }
+    .pk-red .proto-title { color: #c62828; }
+
+    .pk-blu .proto-header,
+    .pk-blu .proto-body { background: #e3f2fd; }
+    .pk-blu .proto-color-bar { background: #1e88e5; }
+    .pk-blu .proto-title { color: #1565c0; }
+
+    .pk-grn .proto-header,
+    .pk-grn .proto-body { background: #f1f8e9; }
+    .pk-grn .proto-color-bar { background: #2e7d32; }
+    .pk-grn .proto-title { color: #1b5e20; }
+
+    .pk-yel .proto-header,
+    .pk-yel .proto-body { background: #fffde7; }
+    .pk-yel .proto-color-bar { background: #f9a825; }
+    .pk-yel .proto-title { color: #e65100; }
+
+    @media (max-width: 600px) {
+      .proto-title { font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <button class="nav-burger" onclick="toggleSidebar()">☰</button>
+    <a class="logo" href="index.html">
+      <div class="logo-badge">СМП</div>
+      <div class="logo-text">
+        <span class="logo-top">АККРЕДИТАЦИЯ</span>
+        <span class="logo-sub" data-kaz="Жедел медициналық көмек станциясы" data-rus="Станция скорой медицинской помощи">Жедел медициналық көмек станциясы</span>
+      </div>
+    </a>
+    <div class="lang-switch">
+      <button class="lang-btn" data-lang="kaz" onclick="setLang('kaz')">ҚАЗ</button>
+      <button class="lang-btn" data-lang="rus" onclick="setLang('rus')">РУС</button>
+    </div>
+  </div>
+</header>
+
+<div class="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <span class="sidebar-brand">СМП · АККРЕДИТАЦИЯ</span>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="index.html"><span data-kaz="Басты бет" data-rus="Главная">Басты бет</span></a>
+    <a href="codes.html"><span data-kaz="Кодтар" data-rus="Коды">Кодтар</span></a>
+    <a href="protocols.html"><span data-kaz="Укладкалар" data-rus="Укладки">Укладкалар</span></a>
+    <a href="sop.html"><span data-kaz="СОП" data-rus="СОП">СОП</span></a>
+    <a href="sanepid.html"><span data-kaz="Санэпид" data-rus="Санэпид">Санэпид</span></a>
+    <a href="documents.html"><span data-kaz="Құжаттар" data-rus="Документы">Құжаттар</span></a>
+    <a href="prikazy.html" class="active"><span data-kaz="Бұйрықтар" data-rus="Приказы">Бұйрықтар</span></a>
+  </nav>
+</div>
+
+<main class="page">
+
+  <h1 class="page-title" data-kaz="Бұйрықтар" data-rus="Приказы">Бұйрықтар</h1>
+  <p class="page-subtitle" data-kaz="Нұсқаулықты ашу үшін басыңыз" data-rus="Нажмите для раскрытия">Нұсқаулықты ашу үшін басыңыз</p>
+
+  <!-- ══════════ КАРТОЧКА 1: № ҚР ДСМ-225/2020 ══════════ -->
+  <div class="proto-card pk-red" id="prikaz-225">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title"
+          data-kaz="№ ҚР ДСМ-225/2020 — ЖМЖ көрсету қағидалары"
+          data-rus="№ ҚР ДСМ-225/2020 — Правила оказания СМП">№ ҚР ДСМ-225/2020 — ЖМЖ көрсету қағидалары</div>
+        <div class="proto-subtitle"
+          data-kaz="2020 жылғы 30 қараша қабылданған"
+          data-rus="Принят 30 ноября 2020 года">2020 жылғы 30 қараша қабылданған</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+
+      <!-- KAZ -->
+      <div class="lb-kaz">
+        <div class="prikaz-meta">
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Қабылданған</div>
+            2020 жылғы 30 қараша
+          </div>
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Не реттейді</div>
+            Қазақстан Республикасында медициналық авиацияны тарта отырып жедел медициналық жәрдем көрсету қағидалары
+          </div>
+        </div>
+
+        <p class="proto-section-title">СМП үшін маңызды</p>
+        <ul class="prikaz-list">
+          <li>Шақырту санаттары — 4 санат (1-шұғыл, 2-жедел, 3-күтімді, 4-жоспарлы)</li>
+          <li>1-санат: шақыртуды өңдеу — 5 минут, жетіп баруы — 10 минут</li>
+          <li>Бригада құрамы: фельдшерлік және мамандандырылған (дәрігерлік)</li>
+          <li>Іле парағы (форма №088/у) — міндетті құжат</li>
+          <li>Бригадалар СЖМЖ-ның кезекші аға дәрігеріне бағынады</li>
+          <li>«103» нөміріне қоңырау — тегін</li>
+        </ul>
+      </div>
+
+      <!-- RUS -->
+      <div class="lb-rus">
+        <div class="prikaz-meta">
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Принят</div>
+            30 ноября 2020 года
+          </div>
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Регулирует</div>
+            Правила оказания скорой медицинской помощи в РК, в том числе с привлечением медицинской авиации
+          </div>
+        </div>
+
+        <p class="proto-section-title">Важно для СМП</p>
+        <ul class="prikaz-list">
+          <li>Категории вызовов — 4 категории (1-экстренная, 2-срочная, 3-неотложная, 4-плановая)</li>
+          <li>1-я категория: обработка вызова — 5 минут, прибытие — 10 минут</li>
+          <li>Состав бригад: фельдшерские и специализированные (врачебные)</li>
+          <li>Сопроводительный лист (форма №088/у) — обязательный документ</li>
+          <li>Бригады подчиняются старшему врачу смены ССМП</li>
+          <li>Звонок на «103» — бесплатно</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ КАРТОЧКА 2: № ҚР ДСМ-175/2020 ══════════ -->
+  <div class="proto-card pk-blu" id="prikaz-175">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title"
+          data-kaz="№ ҚР ДСМ-175/2020 — Медициналық есепке алу құжаттамасы нысандары"
+          data-rus="№ ҚР ДСМ-175/2020 — Формы учётной медицинской документации">№ ҚР ДСМ-175/2020 — Медициналық есепке алу құжаттамасы нысандары</div>
+        <div class="proto-subtitle"
+          data-kaz="2020 жылғы 30 қазан қабылданған"
+          data-rus="Принят 30 октября 2020 года">2020 жылғы 30 қазан қабылданған</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+
+      <!-- KAZ -->
+      <div class="lb-kaz">
+        <div class="prikaz-meta">
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Қабылданған</div>
+            2020 жылғы 30 қазан
+          </div>
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Не реттейді</div>
+            Денсаулық сақтау саласындағы есепке алу құжаттамасының нысандары
+          </div>
+        </div>
+
+        <p class="proto-section-title">СМП үшін маңызды нысандар</p>
+        <ul class="prikaz-list">
+          <li>№088/у — Іле парағы (сырқатнамасына тігіледі)</li>
+          <li>№088-1/у — Іле парағының талоны (науқасты шығарғаннан кейін жедел жәрдем станциясына қайтарылады)</li>
+          <li>№109/у — Шақыртуларды тіркеу журналы</li>
+          <li>№110/у — Жедел жәрдем бригадасының шақырту картасы</li>
+          <li>№113/у — Жүкті әйелдің алмасу-хабарлама картасы</li>
+        </ul>
+      </div>
+
+      <!-- RUS -->
+      <div class="lb-rus">
+        <div class="prikaz-meta">
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Принят</div>
+            30 октября 2020 года
+          </div>
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Регулирует</div>
+            Формы учётной документации в области здравоохранения
+          </div>
+        </div>
+
+        <p class="proto-section-title">Важные формы для СМП</p>
+        <ul class="prikaz-list">
+          <li>№088/у — Сопроводительный лист (подшивается к истории болезни)</li>
+          <li>№088-1/у — Талон к сопроводительному листу (после выписки/смерти возвращается на станцию СМП)</li>
+          <li>№109/у — Журнал регистрации вызовов</li>
+          <li>№110/у — Карта вызова бригады скорой медпомощи</li>
+          <li>№113/у — Обменно-уведомительная карта беременной</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ КАРТОЧКА 3: № ҚР ДСМ-96/2020 ══════════ -->
+  <div class="proto-card pk-grn" id="prikaz-96">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title"
+          data-kaz="№ ҚР ДСМ-96/2020 — Санитариялық талаптар (дезинфекция)"
+          data-rus="№ ҚР ДСМ-96/2020 — Санитарные требования (дезинфекция)">№ ҚР ДСМ-96/2020 — Санитариялық талаптар (дезинфекция)</div>
+        <div class="proto-subtitle"
+          data-kaz="2020 жыл қабылданған"
+          data-rus="Принят в 2020 году">2020 жыл қабылданған</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+
+      <!-- KAZ -->
+      <div class="lb-kaz">
+        <div class="prikaz-meta">
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Қабылданған</div>
+            2020 жыл
+          </div>
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Не реттейді</div>
+            Медициналық ұйымдарда дезинфекция, зарарсыздандыру және зарарсыздандыру шараларына қойылатын санитариялық-эпидемиологиялық талаптар
+          </div>
+        </div>
+
+        <p class="proto-section-title">СМП үшін маңызды</p>
+        <ul class="prikaz-list">
+          <li>Тазалау инвентарын түсіне қарай белгілеу — бір ұйым ішінде БІРІҢҒАЙ болуы керек</li>
+          <li>🔵 КӨК — палаталар, кабинеттер, холлдар</li>
+          <li>🔴 ҚЫЗЫЛ — санитарлық бөлмелер, дәретханалар, лас аймақтар</li>
+          <li>🟢 ЖАСЫЛ — операциялық, процедуралық, стерильді аймақтар</li>
+          <li>🟡 САРЫ — жалпы тазалауға арналған инвентарь</li>
+          <li>Автокөлікті жалпы тазалау — смена сайын, ағымдағы тазалау — әрбір науқастан кейін</li>
+          <li>Медициналық қалдықтар: А класс (қара), Б класс (сары), В класс (қызыл), Г класс (ақ)</li>
+        </ul>
+      </div>
+
+      <!-- RUS -->
+      <div class="lb-rus">
+        <div class="prikaz-meta">
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Принят</div>
+            2020 год
+          </div>
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Регулирует</div>
+            Санитарно-эпидемиологические требования к дезинфекции, стерилизации и дезинсекции в медицинских организациях
+          </div>
+        </div>
+
+        <p class="proto-section-title">Важно для СМП</p>
+        <ul class="prikaz-list">
+          <li>Цветовая маркировка уборочного инвентаря — должна быть ЕДИНОЙ во всей организации</li>
+          <li>🔵 СИНИЙ — палаты, кабинеты, коридоры, холлы</li>
+          <li>🔴 КРАСНЫЙ — санузлы, санитарные комнаты, грязные зоны</li>
+          <li>🟢 ЗЕЛЁНЫЙ — операционные, процедурные, стерильные зоны</li>
+          <li>🟡 ЖЁЛТЫЙ — инвентарь для генеральных уборок</li>
+          <li>Генеральная уборка автомобиля — каждую смену, текущая — после каждого пациента</li>
+          <li>Медицинские отходы: класс А (чёрный), класс Б (жёлтый), класс В (красный), класс Г (белый)</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ КАРТОЧКА 4: №32 (04.04.2025) ══════════ -->
+  <div class="proto-card pk-yel" id="prikaz-32">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title"
+          data-kaz="№32 (04.04.2025) — ЖМЖ қағидаларына өзгерістер"
+          data-rus="№32 (04.04.2025) — Изменения в правила оказания СМП">№32 (04.04.2025) — ЖМЖ қағидаларына өзгерістер</div>
+        <div class="proto-subtitle"
+          data-kaz="2025 жылғы 1 мамырдан бастап күшіне енді"
+          data-rus="Вступил в силу с 1 мая 2025 года">2025 жылғы 1 мамырдан бастап күшіне енді</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+
+      <!-- KAZ -->
+      <div class="lb-kaz">
+        <div class="prikaz-meta">
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Қабылданған</div>
+            2025 жылғы 4 сәуір
+          </div>
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Күшіне ену күні</div>
+            2025 жылғы 1 мамыр
+          </div>
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Не реттейді</div>
+            № ҚР ДСМ-225/2020 бұйрығына өзгерістер
+          </div>
+        </div>
+
+        <p class="proto-section-title">СМП үшін маңызды өзгерістер</p>
+        <ul class="prikaz-list">
+          <li>Шақырту санаттарының анықтамасы нақтыланды</li>
+          <li>Бригада жетіп баруының уақыт нормативтері жаңартылды</li>
+          <li>Медициналық авиацияны тарту шарттары өзгертілді</li>
+          <li>2025 жылғы 1 мамырдан бастап күшіне енді</li>
+        </ul>
+      </div>
+
+      <!-- RUS -->
+      <div class="lb-rus">
+        <div class="prikaz-meta">
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Принят</div>
+            4 апреля 2025 года
+          </div>
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Вступил в силу</div>
+            с 1 мая 2025 года
+          </div>
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Регулирует</div>
+            Внесение изменений в приказ № ҚР ДСМ-225/2020
+          </div>
+        </div>
+
+        <p class="proto-section-title">Важные изменения для СМП</p>
+        <ul class="prikaz-list">
+          <li>Уточнены определения категорий вызовов</li>
+          <li>Обновлены временные нормативы прибытия бригад</li>
+          <li>Изменены условия привлечения медицинской авиации</li>
+          <li>Действует с 1 мая 2025 года</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ КАРТОЧКА 5: № ҚР ДСМ-151 (02.12.2022) ══════════ -->
+  <div class="proto-card pk-grn" id="prikaz-151">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title"
+          data-kaz="№ ҚР ДСМ-151 (02.12.2022) — ООИ санитариялық талаптары"
+          data-rus="№ ҚР ДСМ-151 (02.12.2022) — Санитарные правила по ООИ">№ ҚР ДСМ-151 (02.12.2022) — ООИ санитариялық талаптары</div>
+        <div class="proto-subtitle"
+          data-kaz="2022 жылғы 2 желтоқсан қабылданған"
+          data-rus="Принят 2 декабря 2022 года">2022 жылғы 2 желтоқсан қабылданған</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+
+      <!-- KAZ -->
+      <div class="lb-kaz">
+        <div class="prikaz-meta">
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Қабылданған</div>
+            2022 жылғы 2 желтоқсан
+          </div>
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Не реттейді</div>
+            Індетке қарсы санитариялық-эпидемиологиялық талаптар — оба, тырысқақ ауруларының алдын алу
+          </div>
+        </div>
+
+        <p class="proto-section-title">СМП үшін маңызды</p>
+        <ul class="prikaz-list">
+          <li>Ерекше қауіпті инфекция (ЕҚИ) күдігі бар науқасты тасымалдау ережелері</li>
+          <li>Бригада мүшелері ЖҚС (жеке қорғану сұлбасы) кию міндетті</li>
+          <li>Обаға күдік: дереу 103, СЭС, №2 қорғаныш костюмі</li>
+          <li>Тырысқаққа күдік: ауруды оқшаулау, ас қорыту жолынан материал алу</li>
+          <li>Автокөлікті тасымалдаудан кейін дезинфекциялау — міндетті</li>
+          <li>Іс-қимыл реті: оқшаулау → хабарлау → дезинфекция → материал алу</li>
+        </ul>
+      </div>
+
+      <!-- RUS -->
+      <div class="lb-rus">
+        <div class="prikaz-meta">
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Принят</div>
+            2 декабря 2022 года
+          </div>
+          <div class="prikaz-meta-row">
+            <div class="prikaz-meta-label">Регулирует</div>
+            Санитарно-эпидемиологические требования к организации противоэпидемических мероприятий по предупреждению особо опасных инфекций — чума, холера
+          </div>
+        </div>
+
+        <p class="proto-section-title">Важно для СМП</p>
+        <ul class="prikaz-list">
+          <li>Правила транспортировки пациента с подозрением на ООИ</li>
+          <li>Члены бригады обязаны надеть защитный костюм (СИЗ)</li>
+          <li>Подозрение на чуму: немедленно сообщить 103, СЭС, защитный костюм №2</li>
+          <li>Подозрение на холеру: изоляция больного, забор материала из ЖКТ</li>
+          <li>Дезинфекция автомобиля после транспортировки — обязательна</li>
+          <li>Порядок действий: изоляция → оповещение → дезинфекция → забор материала</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span data-kaz="Жедел медициналық көмек станциясы" data-rus="Станция скорой медицинской помощи">Жедел медициналық көмек станциясы</span>
+  <br>
+  <span data-kaz="Аккредитация материалдары" data-rus="Материалы аккредитации">Аккредитация материалдары</span>
+</footer>
+
+<script src="lang.js"></script>
+<script>
+  function toggleProto(header) {
+    const card = header.closest('.proto-card');
+    card.classList.toggle('open');
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    initLang();
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      const target = document.getElementById(hash);
+      if (target) {
+        target.classList.add('open');
+        setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

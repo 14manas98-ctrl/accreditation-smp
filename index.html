@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ru" data-lang="kaz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>СМП — Аккредитация</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .home-title {
+      font-size: clamp(1.6rem, 6vw, 2.6rem);
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+
+    .home-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+
+    .accred-goal {
+      display: flex;
+      gap: 0;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(30,136,229,0.10);
+    }
+
+    .accred-goal-bar {
+      width: 5px;
+      flex-shrink: 0;
+      background: #1e88e5;
+    }
+
+    .accred-goal-body {
+      flex: 1;
+      padding: 22px 22px 22px 24px;
+    }
+
+    .accred-goal-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1e88e5;
+      letter-spacing: 0.3px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 1.2px;
+    }
+
+    .accred-goal-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .accred-goal-list li {
+      font-size: 13px;
+      color: var(--text);
+      padding: 9px 0 9px 18px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .accred-goal-list li:last-child { border-bottom: none; }
+
+    .accred-goal-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 16px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #1e88e5;
+      opacity: 0.5;
+    }
+
+    .accred-def {
+      display: flex;
+      gap: 0;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .accred-def-bar {
+      width: 5px;
+      flex-shrink: 0;
+      background: #9e9e9e;
+    }
+
+    .accred-def-body {
+      flex: 1;
+      padding: 18px 22px 18px 24px;
+      font-size: 13px;
+      color: var(--text);
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    .accred-law {
+      display: flex;
+      gap: 0;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 14px;
+    }
+
+    .accred-law-bar {
+      width: 5px;
+      flex-shrink: 0;
+      background: #1565c0;
+    }
+
+    .accred-law-body {
+      flex: 1;
+      padding: 22px 22px 22px 24px;
+    }
+
+    .accred-law-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #1565c0;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .accred-law-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .accred-law-list li {
+      font-size: 13px;
+      color: var(--text);
+      padding: 10px 0 10px 18px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      position: relative;
+      line-height: 1.55;
+    }
+
+    .accred-law-list li:last-child { border-bottom: none; }
+
+    .accred-law-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 17px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #1565c0;
+      opacity: 0.5;
+    }
+
+    .accred-inc {
+      display: flex;
+      gap: 0;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 14px;
+    }
+
+    .accred-inc-bar {
+      width: 5px;
+      flex-shrink: 0;
+      background: #e53935;
+    }
+
+    .accred-inc-body {
+      flex: 1;
+      padding: 22px 22px 22px 24px;
+    }
+
+    .accred-inc-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #e53935;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .accred-inc-desc {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .accred-inc-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .accred-inc-types {
+      list-style: none;
+      margin-bottom: 18px;
+    }
+
+    .accred-inc-types li {
+      font-size: 13px;
+      color: var(--text);
+      padding: 5px 0 5px 16px;
+      position: relative;
+      line-height: 1.4;
+    }
+
+    .accred-inc-types li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 12px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #e53935;
+      opacity: 0.5;
+    }
+
+    .inc-steps {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .inc-step {
+      background: #fff5f5;
+      border: 1px solid rgba(229,57,53,0.15);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.5;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .inc-step-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: #e53935;
+      min-width: 18px;
+      padding-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .inc-step-arrow {
+      text-align: center;
+      color: #e53935;
+      font-size: 16px;
+      padding: 2px 0;
+      opacity: 0.5;
+    }
+
+    .accred-cls {
+      display: flex;
+      gap: 0;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 14px;
+    }
+
+    .accred-cls-bar {
+      width: 5px;
+      flex-shrink: 0;
+      background: #7b1fa2;
+    }
+
+    .accred-cls-body {
+      flex: 1;
+      padding: 22px 22px 22px 24px;
+    }
+
+    .accred-cls-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #7b1fa2;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .pyramid {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 20px;
+    }
+
+    .pyr-level {
+      color: #fff;
+      border-radius: 6px;
+      padding: 10px 16px;
+      text-align: center;
+    }
+
+    .pyr-1 { background: #7b1fa2; margin: 0 22%; }
+    .pyr-2 { background: #ef6c00; margin: 0 10%; }
+    .pyr-3 { background: #1565c0; margin: 0; }
+
+    .pyr-name {
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .pyr-desc {
+      font-size: 11px;
+      opacity: 0.9;
+      line-height: 1.45;
+    }
+
+    .icc-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .icc-card {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      background: #faf5ff;
+      border: 1px solid rgba(123,31,162,0.12);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .icc-icon {
+      font-size: 14px;
+      flex-shrink: 0;
+      padding-top: 1px;
+    }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <button class="nav-burger" onclick="toggleSidebar()">☰</button>
+    <a class="logo" href="index.html">
+      <div class="logo-badge">СМП</div>
+      <div class="logo-text">
+        <span class="logo-top">АККРЕДИТАЦИЯ</span>
+        <span class="logo-sub" data-kaz="Жедел медициналық көмек станциясы" data-rus="Станция скорой медицинской помощи">Жедел медициналық көмек станциясы</span>
+      </div>
+    </a>
+    <div class="lang-switch">
+      <button class="lang-btn" data-lang="kaz" onclick="setLang('kaz')">ҚАЗ</button>
+      <button class="lang-btn" data-lang="rus" onclick="setLang('rus')">РУС</button>
+    </div>
+  </div>
+</header>
+
+<div class="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <span class="sidebar-brand">СМП · АККРЕДИТАЦИЯ</span>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="index.html" class="active"><span data-kaz="Басты бет" data-rus="Главная">Басты бет</span></a>
+    <a href="codes.html"><span data-kaz="Кодтар" data-rus="Коды">Кодтар</span></a>
+    <a href="protocols.html"><span data-kaz="Укладкалар" data-rus="Укладки">Укладкалар</span></a>
+    <a href="sop.html"><span data-kaz="СОП" data-rus="СОП">СОП</span></a>
+    <a href="sanepid.html"><span data-kaz="Санэпид" data-rus="Санэпид">Санэпид</span></a>
+    <a href="documents.html"><span data-kaz="Құжаттар" data-rus="Документы">Құжаттар</span></a>
+    <a href="prikazy.html"><span data-kaz="Бұйрықтар" data-rus="Приказы">Бұйрықтар</span></a>
+  </nav>
+</div>
+
+<main class="page">
+
+  <h1 class="home-title">АККРЕДИТАЦИЯ СМП</h1>
+  <p class="home-sub" data-kaz="Жедел медициналық көмек станциясы" data-rus="Станция скорой медицинской помощи">Жедел медициналық көмек станциясы</p>
+
+  <div class="accred-def">
+    <div class="accred-def-bar"></div>
+    <div class="accred-def-body"
+      data-kaz="Аккредитация (Credit — латын сөзі, аудармасы — сенім) — ұйымдардың, жеке тұлғалардың, тауарлардың, тұрғындарға көрсетілетін қызметтері, жүйесі — жүйе қатысушыларының жұмысын реттейтін ережелер, сипаттамалар, талаптар, ұйымдастырушылық және техникалық шаралардың жиынтығы."
+      data-rus="Аккредитация (Credit — латинское слово, перевод — доверие) — совокупность правил, описаний, требований, организационных и технических мер, регулирующих работу участников системы услуг, оказываемых организациями, физическими лицами, товарами и населению.">Аккредитация (Credit — латын сөзі, аудармасы — сенім) — ұйымдардың, жеке тұлғалардың, тауарлардың, тұрғындарға көрсетілетін қызметтері, жүйесі — жүйе қатысушыларының жұмысын реттейтін ережелер, сипаттамалар, талаптар, ұйымдастырушылық және техникалық шаралардың жиынтығы.</div>
+  </div>
+
+  <div class="accred-goal">
+    <div class="accred-goal-bar"></div>
+    <div class="accred-goal-body">
+      <div class="accred-goal-title"
+        data-kaz="Аккредитацияның мақсаты:"
+        data-rus="Цель аккредитации:">Аккредитацияның мақсаты:</div>
+      <ul class="accred-goal-list">
+        <li data-kaz="Медициналық көмек сапасын стандарттар негізінде жақсарту"
+            data-rus="Улучшение качества медицинской помощи на основе интеграции и управления службами">Медициналық көмек сапасын стандарттар негізінде жақсарту</li>
+        <li data-kaz="Денсаулық сақтаудағы интеграция мен басқаруды жақсарту"
+            data-rus="Улучшение интеграции и управления в здравоохранении">Денсаулық сақтаудағы интеграция мен басқаруды жақсарту</li>
+        <li data-kaz="Стандарттарға кімнің және қалай сәйкес келетіні жөнінде салыстырмалы мәліметтер базасын қалыптастыру"
+            data-rus="Создание сравнительной базы данных о том, кто и как соответствует стандартам">Стандарттарға кімнің және қалай сәйкес келетіні жөнінде салыстырмалы мәліметтер базасын қалыптастыру</li>
+        <li data-kaz="Жоғары тиімділік/өнімділік есебінен денсаулық сақтауға жұмсалатын шығындарды азайту"
+            data-rus="Сокращение расходов на здравоохранение за счёт повышенной эффективности/производительности">Жоғары тиімділік/өнімділік есебінен денсаулық сақтауға жұмсалатын шығындарды азайту</li>
+        <li data-kaz="Сапаны жақсарту және жақсы тәжірибе жөнінде оқыту мен консультацияларды қамтамасыз ету"
+            data-rus="Обеспечение обучения и консультаций по улучшению качества и передовому опыту">Сапаны жақсарту және жақсы тәжірибе жөнінде оқыту мен консультацияларды қамтамасыз ету</li>
+        <li data-kaz="Қоғамдық сенімді жоғарылату және қауіпті төмендету"
+            data-rus="Укрепление общественного доверия и снижение рисков">Қоғамдық сенімді жоғарылату және қауіпті төмендету</li>
+      </ul>
+    </div>
+  </div>
+
+
+  <div class="accred-law">
+    <div class="accred-law-bar"></div>
+    <div class="accred-law-body">
+      <div class="accred-law-title"
+        data-kaz="Аккредиттеудің қолданыстағы заңнамалық базасы"
+        data-rus="Действующая правовая база по вопросам аккредитации">Аккредиттеудің қолданыстағы заңнамалық базасы</div>
+      <ul class="accred-law-list">
+        <li data-kaz="Қазақстан Республикасы Денсаулық сақтау министрінің 2022 жылғы 8 қарашадағы № ҚР ДСМ-131 бұйрығы. Қазақстан Республикасының Әділет министрлігінде 2022 жылғы 10 қарашада № 30482 болып тіркелді. «Денсаулық сақтау саласындағы аккредиттеу қағидаларын бекіту туралы» Қазақстан Республикасы Денсаулық сақтау министрінің 2020 жылғы 21 желтоқсандағы № ҚР ДСМ-299/2020 бұйрығына өзгеріс енгізу туралы"
+            data-rus="Приказ Министра здравоохранения РК от 8 ноября 2022 года № ҚР ДСМ-131. Зарегистрирован в Министерстве юстиции РК 10 ноября 2022 года № 30482. О внесении изменения в приказ Министра здравоохранения РК от 21 декабря 2020 года № ҚР ДСМ-299/2020 «Об утверждении правил аккредитации в области здравоохранения»">Қазақстан Республикасы Денсаулық сақтау министрінің 2022 жылғы 8 қарашадағы № ҚР ДСМ-131 бұйрығы. Қазақстан Республикасының Әділет министрлігінде 2022 жылғы 10 қарашада № 30482 болып тіркелді. «Денсаулық сақтау саласындағы аккредиттеу қағидаларын бекіту туралы» Қазақстан Республикасы Денсаулық сақтау министрінің 2020 жылғы 21 желтоқсандағы № ҚР ДСМ-299/2020 бұйрығына өзгеріс енгізу туралы</li>
+        <li data-kaz="Қазақстан Республикасы Денсаулық сақтау министрінің 2020 жылғы 21 желтоқсандағы № ҚР ДСМ-299/2020 бұйрығы. Қазақстан Республикасының Әділет министрлігінде 2020 жылғы 22 желтоқсанда № 21852 болып тіркелді. Денсаулық сақтау саласындағы аккредиттеу қағидаларын бекіту туралы"
+            data-rus="Приказ Министра здравоохранения РК от 21 декабря 2020 года № ҚР ДСМ-299/2020. Зарегистрирован в Министерстве юстиции РК 22 декабря 2020 года № 21852. Об утверждении правил аккредитации в области здравоохранения">Қазақстан Республикасы Денсаулық сақтау министрінің 2020 жылғы 21 желтоқсандағы № ҚР ДСМ-299/2020 бұйрығы. Қазақстан Республикасының Әділет министрлігінде 2020 жылғы 22 желтоқсанда № 21852 болып тіркелді. Денсаулық сақтау саласындағы аккредиттеу қағидаларын бекіту туралы</li>
+        <li data-kaz="Медициналық ұйымдарды аккредиттеу стандарттарын бекіту туралы. Қазақстан Республикасы Денсаулық сақтау министрінің м.а. 2021 жылғы 5 қарашадағы № ҚР ДСМ-111 бұйрығы. Қазақстан Республикасының Әділет министрлігінде 2021 жылғы 9 қарашада № 25057 болып тіркелді"
+            data-rus="Приказ и.о. Министра здравоохранения РК от 5 ноября 2021 года № ҚР ДСМ-111. Зарегистрирован в Министерстве юстиции РК 9 ноября 2021 года № 25057. Об утверждении стандартов аккредитации медицинских организаций">Медициналық ұйымдарды аккредиттеу стандарттарын бекіту туралы. Қазақстан Республикасы Денсаулық сақтау министрінің м.а. 2021 жылғы 5 қарашадағы № ҚР ДСМ-111 бұйрығы. Қазақстан Республикасының Әділет министрлігінде 2021 жылғы 9 қарашада № 25057 болып тіркелді</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="accred-inc">
+    <div class="accred-inc-bar"></div>
+    <div class="accred-inc-body">
+      <div class="accred-inc-title" data-kaz="ОҚИҒА" data-rus="ИНЦИДЕНТ">ОҚИҒА</div>
+
+      <div class="lb-kaz">
+        <p class="accred-inc-desc">Оқиға (қолайсыз оқиға) — бұл әдеттен тыс оқиға. Қызметтің қалыпты жұмыс істеуінің бөлігі болып табылмайтын мұндай оқиға көрсетілетін қызметтердің сапасының төмендеуіне әсер етеді немесе әсер етуі мүмкін, қағымсыз нәтижеге әкелуі мүмкін.</p>
+        <div class="accred-inc-sub">Оқиғалар бөлінеді:</div>
+        <ul class="accred-inc-types">
+          <li>Ықтимал қателер (аруларға жақын / Near Miss)</li>
+          <li>Қателер</li>
+          <li>Төтенше жағдайлар (Sentinel Event)</li>
+        </ul>
+        <div class="accred-inc-sub">Оқиға жағдайы хабарландыру сызбасы:</div>
+        <div class="inc-steps">
+          <div class="inc-step"><span class="inc-step-num">1</span><span>Оқиғаға дереу әрекет ету (оның ішінде пациент/келуші/қызметкерлердің күтімі)</span></div>
+          <div class="inc-step-arrow">↓</div>
+          <div class="inc-step"><span class="inc-step-num">2</span><span>Профиль бойынша емдеуші дәрігерге/басқа органдарға хабарландыру. Оқиға формасын толтырыңыз</span></div>
+          <div class="inc-step-arrow">↓</div>
+          <div class="inc-step"><span class="inc-step-num">3</span><span>Есеп беру (мүмкіндігінше түсіру: материалдарды сақтау, суретке түсіру, т.б.)</span></div>
+          <div class="inc-step-arrow">↓</div>
+          <div class="inc-step"><span class="inc-step-num">4</span><span>«Оқиға туралы есепті» ОМКіУР қызметкеріне аберіңіз немесе «оқиға туралы хабарламаны» жинау үшін есепті қораптан тастаңыз</span></div>
+        </div>
+      </div>
+
+      <div class="lb-rus">
+        <p class="accred-inc-desc">Инцидент (неблагоприятное событие) — это ненормальное, необычное событие. Такое событие, не являющееся частью нормального функционирования деятельности, влияет или может повлиять на снижение качества оказываемых услуг, может привести к нежелательному исходу.</p>
+        <div class="accred-inc-sub">Инциденты делятся на:</div>
+        <ul class="accred-inc-types">
+          <li>Потенциальные ошибки (Near Miss)</li>
+          <li>Ошибки</li>
+          <li>Чрезвычайные события (Sentinel Event)</li>
+        </ul>
+        <div class="accred-inc-sub">Схема оповещения об инциденте:</div>
+        <div class="inc-steps">
+          <div class="inc-step"><span class="inc-step-num">1</span><span>Меры по немедленному устранению инцидента (в том числе оказание помощи пациенту/посетителю/персоналу)</span></div>
+          <div class="inc-step-arrow">↓</div>
+          <div class="inc-step"><span class="inc-step-num">2</span><span>Сообщить лечащему врачу/другим инстанциям по профилю. Заполнить форму «отчёта об инциденте»</span></div>
+          <div class="inc-step-arrow">↓</div>
+          <div class="inc-step"><span class="inc-step-num">3</span><span>Зафиксировать: сохранить материалы, сфотографировать и др.</span></div>
+          <div class="inc-step-arrow">↓</div>
+          <div class="inc-step"><span class="inc-step-num">4</span><span>Передать «отчёт об инциденте» сотруднику ОМКиУР или опустить отчёт в ящик для сбора «отчёта об инцидентах»</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="accred-cls">
+    <div class="accred-cls-bar"></div>
+    <div class="accred-cls-body">
+      <div class="accred-cls-title" data-kaz="Оқиғаның классификациясы" data-rus="Классификация инцидентов">Оқиғаның классификациясы</div>
+
+      <div class="lb-kaz">
+        <div class="pyramid">
+          <div class="pyr-level pyr-1">
+            <div class="pyr-name">▲ Төтенше жағдай</div>
+            <div class="pyr-desc">Өлімге немесе мүгедектікке әкелді (соның ішінде аяқ-қолды немесе функцияны жоғалуы) немесе аурудың табиғи ағымымен байланысты емес маңызды психологиялық жарақат</div>
+          </div>
+          <div class="pyr-level pyr-2">
+            <div class="pyr-name">▲ Қате</div>
+            <div class="pyr-desc">Аз немесе зияны жоқ</div>
+          </div>
+          <div class="pyr-level pyr-3">
+            <div class="pyr-name">▲ Қате дерлік</div>
+            <div class="pyr-desc">нәтижеге әсер етпеген кез келген процесс немесе ауытқу, бірақ оның қайталануы жағымсыз оқиғаның (науқасқа зиянның) жоғары қаупін тудырады</div>
+          </div>
+        </div>
+        <div class="accred-inc-sub">Салдардың түрлері:</div>
+        <div class="icc-cards">
+          <div class="icc-card"><span class="icc-icon">⚠️</span><div><strong>Ешқандай зиян</strong> — бұл теріс нәтижесі жоқ әрекет немесе әрекетсіздік</div></div>
+          <div class="icc-card"><span class="icc-icon">⚠️</span><div><strong>Жеңіл зиян</strong> — науқастың физикалық немесе психикалық жағдайының жеңіл немесе орташа дәрежедегі бұзылуына әкелетін әрекет немесе әрекетсіздік</div></div>
+          <div class="icc-card"><span class="icc-icon">⚠️</span><div><strong>Sentinel оқиғасы / төтенше немесе төтенше оқиға</strong> — күтпеген оқиға, оның ішінде өлім, ауыр физикалық немесе физиологиялық жарақат. Мұндай оқиғалар экстремалды деп аталады, өйткені олар дереу тергеу және әрекет ету қажеттілігін көрсетеді</div></div>
+        </div>
+      </div>
+
+      <div class="lb-rus">
+        <div class="pyramid">
+          <div class="pyr-level pyr-1">
+            <div class="pyr-name">▲ Чрезвычайный инцидент</div>
+            <div class="pyr-desc">Привёл к смерти или инвалидности (в т.ч. потере конечности или функции), или к значительной психологической травме, не связанной с естественным течением заболевания</div>
+          </div>
+          <div class="pyr-level pyr-2">
+            <div class="pyr-name">▲ Ошибка</div>
+            <div class="pyr-desc">Незначительный вред или отсутствие вреда</div>
+          </div>
+          <div class="pyr-level pyr-3">
+            <div class="pyr-name">▲ Почти ошибка</div>
+            <div class="pyr-desc">любой процесс или отклонение, которое не повлияло на исход, но его повторение несёт высокий риск неблагоприятного события (нанесения вреда пациенту)</div>
+          </div>
+        </div>
+        <div class="accred-inc-sub">Виды последствий:</div>
+        <div class="icc-cards">
+          <div class="icc-card"><span class="icc-icon">⚠️</span><div><strong>Нет вреда</strong> — это действие или бездействие без негативного исхода</div></div>
+          <div class="icc-card"><span class="icc-icon">⚠️</span><div><strong>Есть незначительный вред</strong> — это действие или бездействие, которое приводит к незначительным или умеренным нарушениям физического или психического состояния пациента</div></div>
+          <div class="icc-card"><span class="icc-icon">⚠️</span><div><strong>Sentinel Event / чрезвычайное или экстремальное событие</strong> — неожиданное происшествие, включающее смерть, серьёзную физическую или физиологическую травму. Такие события называются экстремальными, потому что они указывают на необходимость немедленного расследования и реагирования</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span data-kaz="Жедел медициналық көмек станциясы" data-rus="Станция скорой медицинской помощи">Жедел медициналық көмек станциясы</span>
+  <br>
+  <span data-kaz="Аккредитация материалдары" data-rus="Материалы аккредитации">Аккредитация материалдары</span>
+</footer>
+
+<script src="lang.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    initLang();
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ru" data-lang="kaz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Санэпид — СМП</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .proto-card {
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .proto-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .proto-color-bar {
+      width: 5px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      align-self: stretch;
+      min-height: 50px;
+    }
+
+    .proto-names { flex: 1; }
+
+    .proto-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .proto-subtitle {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      font-weight: 500;
+      margin-top: 3px;
+    }
+
+    .proto-ref {
+      font-size: 10px;
+      color: #aaa;
+      margin-top: 4px;
+    }
+
+    .proto-body {
+      display: none;
+      border-top: 1px solid rgba(0,0,0,0.07);
+      padding: 20px;
+    }
+
+    .proto-card.open .proto-body { display: block; animation: fadeIn 0.2s ease; }
+    .proto-card.open .card-chevron { transform: rotate(180deg); }
+
+    .proto-section-title {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .proto-section-title.mt { margin-top: 20px; }
+
+    /* Drug list */
+    .drug-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drug-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .drug-list li:last-child { border-bottom: none; }
+    .drug-name { font-weight: 500; flex: 1; line-height: 1.4; }
+    .drug-qty {
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
+      min-width: 60px;
+      text-align: right;
+    }
+
+    /* Step list (numbered) */
+    .step-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .step-list li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .step-list li:last-child { border-bottom: none; }
+
+    .sn {
+      font-size: 10px;
+      font-weight: 700;
+      min-width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Stage list (titled steps) */
+    .stage-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .stage-item {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .stage-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 8px 14px;
+      color: #fff;
+    }
+
+    .stage-desc {
+      font-size: 12px;
+      color: var(--text);
+      padding: 10px 14px;
+      line-height: 1.6;
+      background: rgba(255,255,255,0.55);
+    }
+
+    /* Waste classes */
+    .waste-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .waste-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.08);
+      background: rgba(255,255,255,0.6);
+    }
+
+    .waste-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      letter-spacing: 0.3px;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .waste-text { font-size: 12px; color: var(--text); line-height: 1.5; }
+
+    .wc-a .waste-badge { background: #212121; color: #fff; }
+    .wc-b .waste-badge { background: #f9a825; color: #fff; }
+    .wc-v .waste-badge { background: #e53935; color: #fff; }
+    .wc-g .waste-badge { background: #e0e0e0; color: #424242; border: 1px solid #bdbdbd; }
+
+    /* Color zones */
+    .color-zones { display: flex; flex-direction: column; gap: 0; }
+
+    .color-zone {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .color-zone:last-child { border-bottom: none; }
+
+    .cz-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .cz-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .cz-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+    /* Notes */
+    .note-red {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-left: 4px solid #e53935;
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.55;
+      background: rgba(229,57,53,0.07);
+    }
+
+    .note-red strong { color: #c62828; }
+
+    .note-blu {
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-left: 4px solid #1e88e5;
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.55;
+      background: rgba(30,136,229,0.07);
+    }
+
+    .note-blu strong {
+      display: block;
+      color: #1565c0;
+      font-size: 11px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .note-yel {
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-left: 4px solid #f9a825;
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.55;
+      background: rgba(249,168,37,0.08);
+    }
+
+    .note-yel strong {
+      display: block;
+      color: #e65100;
+      font-size: 11px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    /* Color variants */
+    .pk-blk .proto-header,
+    .pk-blk .proto-body { background: #f5f5f5; }
+    .pk-blk .proto-color-bar { background: #212121; }
+    .pk-blk .proto-title { color: #212121; }
+    .pk-blk .drug-qty { color: #212121; }
+    .pk-blk .sn { background: rgba(33,33,33,0.1); color: #212121; }
+    .pk-blk .stage-title { background: #212121; }
+
+    .pk-pur .proto-header,
+    .pk-pur .proto-body { background: #f3e5f5; }
+    .pk-pur .proto-color-bar { background: #7b1fa2; }
+    .pk-pur .proto-title { color: #7b1fa2; }
+    .pk-pur .drug-qty { color: #7b1fa2; }
+    .pk-pur .sn { background: rgba(123,31,162,0.1); color: #7b1fa2; }
+    .pk-pur .stage-title { background: #7b1fa2; }
+
+    .pk-dbl .proto-header,
+    .pk-dbl .proto-body { background: #e8eaf6; }
+    .pk-dbl .proto-color-bar { background: #1565c0; }
+    .pk-dbl .proto-title { color: #1565c0; }
+    .pk-dbl .drug-qty { color: #1565c0; }
+    .pk-dbl .sn { background: rgba(21,101,192,0.1); color: #1565c0; }
+    .pk-dbl .stage-title { background: #1565c0; }
+
+    .pk-drd .proto-header,
+    .pk-drd .proto-body { background: #ffebee; }
+    .pk-drd .proto-color-bar { background: #c62828; }
+    .pk-drd .proto-title { color: #c62828; }
+    .pk-drd .drug-qty { color: #c62828; }
+    .pk-drd .sn { background: rgba(198,40,40,0.1); color: #c62828; }
+    .pk-drd .stage-title { background: #c62828; }
+
+    .pk-grn .proto-header,
+    .pk-grn .proto-body { background: #e8f5e9; }
+    .pk-grn .proto-color-bar { background: #2e7d32; }
+    .pk-grn .proto-title { color: #2e7d32; }
+    .pk-grn .drug-qty { color: #2e7d32; }
+    .pk-grn .sn { background: rgba(46,125,50,0.1); color: #2e7d32; }
+    .pk-grn .stage-title { background: #2e7d32; }
+
+    @media (max-width: 600px) {
+      .drug-list li { flex-wrap: wrap; gap: 4px; }
+      .drug-qty { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <button class="nav-burger" onclick="toggleSidebar()">☰</button>
+    <a class="logo" href="index.html">
+      <div class="logo-badge">СМП</div>
+      <div class="logo-text">
+        <span class="logo-top">АККРЕДИТАЦИЯ</span>
+        <span class="logo-sub" data-kaz="Жедел медициналық көмек станциясы" data-rus="Станция скорой медицинской помощи">Жедел медициналық көмек станциясы</span>
+      </div>
+    </a>
+    <div class="lang-switch">
+      <button class="lang-btn" data-lang="kaz" onclick="setLang('kaz')">ҚАЗ</button>
+      <button class="lang-btn" data-lang="rus" onclick="setLang('rus')">РУС</button>
+    </div>
+  </div>
+</header>
+
+<div class="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <span class="sidebar-brand">СМП · АККРЕДИТАЦИЯ</span>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="index.html"><span data-kaz="Басты бет" data-rus="Главная">Басты бет</span></a>
+    <a href="codes.html"><span data-kaz="Кодтар" data-rus="Коды">Кодтар</span></a>
+    <a href="protocols.html"><span data-kaz="Укладкалар" data-rus="Укладки">Укладкалар</span></a>
+    <a href="sop.html"><span data-kaz="СОП" data-rus="СОП">СОП</span></a>
+    <a href="sanepid.html" class="active"><span data-kaz="Санэпид" data-rus="Санэпид">Санэпид</span></a>
+    <a href="documents.html"><span data-kaz="Құжаттар" data-rus="Документы">Құжаттар</span></a>
+    <a href="prikazy.html"><span data-kaz="Бұйрықтар" data-rus="Приказы">Бұйрықтар</span></a>
+  </nav>
+</div>
+
+<main class="page">
+
+  <h1 class="page-title" data-kaz="Санэпид" data-rus="Санэпид">Санэпид</h1>
+  <p class="page-subtitle" data-kaz="Нұсқаулықты ашу үшін басыңыз" data-rus="Нажмите для раскрытия">Нұсқаулықты ашу үшін басыңыз</p>
+
+  <!-- ══════════ КАРТОЧКА 1: МЕДИЦИНСКИЕ ОТХОДЫ ══════════ -->
+  <div class="proto-card pk-blk" id="medical-waste">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title" data-kaz="Медициналық қалдықтар" data-rus="Медицинские отходы">Медициналық қалдықтар</div>
+        <div class="proto-subtitle" data-kaz="Медициналық ұйым үшін ішкі бақылау" data-rus="Внутренний контроль для медицинской организации">Медициналық ұйым үшін ішкі бақылау</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+
+      <p class="proto-section-title" data-kaz="Қалдықтардың кластары" data-rus="Классы отходов">Қалдықтардың кластары</p>
+
+      <div class="waste-list">
+        <div class="waste-item wc-a">
+          <div class="waste-badge">КЛАСС А<br>⬛ Чёрный</div>
+          <div class="waste-text">Медицинские отходы, не отличающиеся по составу от коммунально-бытовых, не обладающие опасными свойствами</div>
+        </div>
+        <div class="waste-item wc-b">
+          <div class="waste-badge">КЛАСС Б<br>🟨 Жёлтый</div>
+          <div class="waste-text">Эпидемиологически опасные медицинские отходы: материалы и инструменты с потенциально инфицированным материалом, патологоанатомические отходы, кровь и биологические жидкости, микроорганизмы и др.</div>
+        </div>
+        <div class="waste-item wc-v">
+          <div class="waste-badge">КЛАСС В<br>🟥 Красный</div>
+          <div class="waste-text">Чрезвычайно эпидемиологически опасные отходы: материалы, контактировавшие с больными особо опасными инфекциями, микроорганизмы I–II групп патогенности, лабораторные отходы, вакцины и др.</div>
+        </div>
+        <div class="waste-item wc-g">
+          <div class="waste-badge">КЛАСС Г<br>⬜ Белый</div>
+          <div class="waste-text">Токсикологически опасные отходы: лекарственные, дезинфицирующие средства, ртутьсодержащие предметы, химические вещества и др.</div>
+        </div>
+      </div>
+
+      <div class="note-blu">
+        <strong data-kaz="Маңызды" data-rus="Важно">Маңызды</strong>
+        Убедитесь, что система обращения с медицинскими отходами соответствует санитарным требованиям и нормам.
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ КАРТОЧКА 2: ГЕНЕРАЛЬНАЯ УБОРКА ══════════ -->
+  <div class="proto-card pk-pur" id="general-cleaning">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title" data-kaz="СМП автомобилінің бас жинауы" data-rus="Генеральная уборка автомобиля СМП">СМП автомобилінің бас жинауы</div>
+        <div class="proto-subtitle" data-kaz="Бас жинауды жүргізу алгоритмі" data-rus="Алгоритм проведения генеральной уборки">Бас жинауды жүргізу алгоритмі</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+
+      <p class="proto-section-title" data-kaz="Кезеңдер тізімі" data-rus="Этапы проведения">Кезеңдер тізімі</p>
+
+      <ol class="step-list">
+        <li><span class="sn">1</span>Проверить наличие: моющих и дезинфицирующих средств, уборочного инвентаря, одноразовых салфеток/ветоши, СИЗ</li>
+        <li><span class="sn">2</span>Надеть СИЗ: халат, маску/респиратор, перчатки, защитные очки/экран</li>
+        <li><span class="sn">3</span>Подготовить рабочие растворы моющих и дезинфицирующих средств согласно инструкции производителя</li>
+        <li><span class="sn">4</span>Освободить салон от медицинских изделий, расходных материалов и отходов</li>
+        <li><span class="sn">5</span>Удалить медицинские отходы и использованные расходные материалы в контейнеры для отходов соответствующего класса</li>
+        <li><span class="sn">6</span>Провести влажную уборку: потолок → вентиляционные решётки → окна и подоконники → стены и двери сверху вниз → осветительные приборы → медицинское оборудование → носилки → мебель и контактные поверхности → пол от дальней части салона к выходу</li>
+        <li><span class="sn">7</span>Смыть остатки моющих средств чистой водой</li>
+        <li><span class="sn">8</span>Провести дезинфекцию всех поверхностей: стен, дверей, поручней, носилок, сидений, медицинского оборудования, пола, контактных поверхностей</li>
+        <li><span class="sn">9</span>Обработку проводить методом протирания ветошью, смоченной дезинфицирующим раствором, или методом орошения (распыления)</li>
+        <li><span class="sn">10</span>Выдержать экспозицию дезинфицирующего средства согласно инструкции производителя</li>
+        <li><span class="sn">11</span>При необходимости смыть дезинфицирующее средство чистой водой</li>
+        <li><span class="sn">12</span>Перед этапом смывания заменить загрязнённые перчатки и при необходимости санитарную одежду</li>
+        <li><span class="sn">13</span>Протереть поверхности сухой чистой ветошью</li>
+        <li><span class="sn">14</span>Провести проветривание салона до полного исчезновения запаха дезинфицирующего средства</li>
+        <li><span class="sn">15</span>При наличии бактерицидного облучателя провести обеззараживание воздуха согласно инструкции производителя</li>
+        <li><span class="sn">16</span>Провести дезинфекцию уборочного инвентаря</li>
+        <li><span class="sn">17</span>Промыть и высушить уборочный инвентарь</li>
+        <li><span class="sn">18</span>Снять СИЗ и утилизировать одноразовые средства защиты как медицинские отходы класса «В»</li>
+        <li><span class="sn">19</span>Обработать руки кожным антисептиком</li>
+        <li><span class="sn">20</span>Сделать запись о проведении генеральной уборки в журнале учёта генеральных уборок</li>
+      </ol>
+
+    </div>
+  </div>
+
+  <!-- ══════════ КАРТОЧКА 3: ТЕКУЩАЯ УБОРКА ══════════ -->
+  <div class="proto-card pk-dbl" id="current-cleaning">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title" data-kaz="СМП автомобилінің ағымдағы жинауы" data-rus="Текущая уборка автомобиля СМП">СМП автомобилінің ағымдағы жинауы</div>
+        <div class="proto-subtitle" data-kaz="Мақсат: санитарлық-эпидемиологиялық қауіпсіздікті қамтамасыз ету" data-rus="Цель: обеспечение санитарно-эпидемиологической безопасности">Мақсат: санитарлық-эпидемиологиялық қауіпсіздікті қамтамасыз ету</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+
+      <div class="stage-list">
+        <div class="stage-item">
+          <div class="stage-title">1. Подготовка к уборке</div>
+          <div class="stage-desc">Надеть СИЗ (маска/респиратор, перчатки, халат, очки/экран). Подготовить дезинфицирующий раствор согласно инструкции. Подготовить уборочный инвентарь, салфетки/ветошь, пакеты для отходов класса «В»</div>
+        </div>
+        <div class="stage-item">
+          <div class="stage-title">2. Обработка биологических загрязнений</div>
+          <div class="stage-desc">При наличии загрязнения биологическими жидкостями нанести дезинфицирующее средство. Выдержать экспозицию. Удалить загрязнение одноразовой салфеткой/ветошью. Использованные салфетки — в пакет для отходов класса «В»</div>
+        </div>
+        <div class="stage-item">
+          <div class="stage-title">3. Дезинфекция контактных поверхностей</div>
+          <div class="stage-desc">Обработать все контактные поверхности: носилки, поручни, сиденья, ремни фиксации, дверные ручки, панели, выключатели, пол, медицинское оборудование. Способ: протирание ветошью или орошение (распыление)</div>
+        </div>
+        <div class="stage-item">
+          <div class="stage-title">4. Выдержка экспозиции</div>
+          <div class="stage-desc">Выдержать время экспозиции согласно инструкции к дезинфицирующему средству</div>
+        </div>
+        <div class="stage-item">
+          <div class="stage-title">5. Завершение обработки</div>
+          <div class="stage-desc">При необходимости смыть остатки дезинфицирующего средства. Протереть поверхности сухой ветошью. Провести проветривание до исчезновения запаха дезинфектанта</div>
+        </div>
+        <div class="stage-item">
+          <div class="stage-title">6. Обращение с отходами</div>
+          <div class="stage-desc">Использованные СИЗ, салфетки, ветошь и одноразовые материалы собрать в пакет для отходов класса «В». Герметично закрыть и утилизировать согласно требованиям медорганизации.<br><strong style="color:#c62828;">ЗАПРЕЩАЕТСЯ</strong> утилизировать медицинские отходы вместе с бытовыми!</div>
+        </div>
+        <div class="stage-item">
+          <div class="stage-title">7. Завершение уборки</div>
+          <div class="stage-desc">Продезинфицировать уборочный инвентарь. Снять СИЗ в установленной последовательности. Провести гигиеническую обработку рук. При необходимости обработать обувь в специально отведённом месте</div>
+        </div>
+      </div>
+
+      <div class="note-red">
+        <strong>Текущая уборка проводится после каждого пациента.</strong> При перевозке пациентов с подозрением на инфекционное заболевание — обработка проводится немедленно.
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ КАРТОЧКА 4: ООИ ══════════ -->
+  <div class="proto-card pk-drd" id="ooi-sanepid">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title" data-kaz="Санитарлық-эпидемиологиялық талаптар — ТҚИ" data-rus="Санитарно-эпидемиологические требования — ООИ">Санитарлық-эпидемиологиялық талаптар — ТҚИ</div>
+        <div class="proto-subtitle" data-kaz="Оба, тырысқақ — ҚР ДСМ-116 бұйрығы, 17.11.2021" data-rus="Чума, холера — Приказ МЗ РК от 17.11.2021 № ҚР ДСМ-116">Оба, тырысқақ — ҚР ДСМ-116 бұйрығы, 17.11.2021</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+
+      <p class="proto-section-title" data-kaz="Жеке жедел профилактика құралдарының жинағы" data-rus="Комплект средств индивидуальной экстренной профилактики">Жеке жедел профилактика құралдарының жинағы</p>
+
+      <ul class="drug-list">
+        <li><span class="drug-name">Клеёнка медицинская (выстилается на поверхности стола, тумбочки)</span><span class="drug-qty">1 м</span></li>
+        <li><span class="drug-name">Ёмкость для сбора отработанного материала</span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Спирт этиловый 70% (для обработки открытых частей тела, лица, рук, шеи, груди, полоскания полости рта)</span><span class="drug-qty">100 мл</span></li>
+        <li><span class="drug-name">Сульфацил-натрий (альбуцид) 10–20% для обработки слизистой глаз, носа или протаргол для обработки слизистой носа</span><span class="drug-qty">1 фл.</span></li>
+        <li><span class="drug-name">Стрептомицин (250 тыс. ед. в 1 мл) для закапывания в глаза</span><span class="drug-qty">1 фл.</span></li>
+        <li><span class="drug-name">Одноразовый шприц с иглой для разведения стрептомицина</span><span class="drug-qty">3 шт.</span></li>
+        <li><span class="drug-name">Вода дистиллированная в ампулах по 5 мл (для разведения стрептомицина)</span><span class="drug-qty">10 мл</span></li>
+        <li><span class="drug-name">Вата медицинская (шарики) в бязевых мешках для обработки открытых частей тела</span><span class="drug-qty">50 г</span></li>
+        <li><span class="drug-name">Пинцет</span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Калия перманганат: 0,1–0,5% для промывания, 0,01–0,1% для полоскания полости рта и горла</span><span class="drug-qty">1 фл.</span></li>
+      </ul>
+
+      <p class="proto-section-title mt" data-kaz="Зарарсыздандыру жинағы" data-rus="Комплект для обеззараживания">Зарарсыздандыру жинағы</p>
+
+      <ul class="drug-list">
+        <li><span class="drug-name">Дезинфицирующее средство (сухое вещество)</span><span class="drug-qty">2 × 300 г</span></li>
+        <li><span class="drug-name">Эмалированная ёмкость объёмом 10 литров</span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Пластмассовая ёмкость с вкручивающейся крышкой объёмом 20 л для замачивания защитных костюмов</span><span class="drug-qty">1 шт.</span></li>
+      </ul>
+
+      <div class="note-blu">
+        <strong data-kaz="Ескерту" data-rus="Примечание">Ескерту</strong>
+        Объём и количество средств рассчитаны на обработку 3 человек и хранятся в промаркированном биксе.
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ КАРТОЧКА 5: ЦВЕТОВАЯ МАРКИРОВКА ══════════ -->
+  <div class="proto-card pk-grn" id="color-marking">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title" data-kaz="Жинау мүкәммалының түс белгілеуі" data-rus="Цветовая маркировка уборочного инвентаря">Жинау мүкәммалының түс белгілеуі</div>
+        <div class="proto-subtitle" data-kaz="Бір түс = бір аймақ · ҚР ДСМ-96/2020 бұйрығы" data-rus="Один цвет = одна зона · Приказ МЗ РК № ҚР ДСМ-96/2020">Бір түс = бір аймақ · ҚР ДСМ-96/2020 бұйрығы</div>
+        <div class="proto-ref" data-kaz="Аймақтар арасында мүкәммалды жылжыту тыйым салынады" data-rus="Перемещение инвентаря между зонами запрещено">Аймақтар арасында мүкәммалды жылжыту тыйым салынады</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+
+      <p class="proto-section-title" data-kaz="Аймақтар бойынша түстер" data-rus="Цвета по зонам">Аймақтар бойынша түстер</p>
+
+      <div class="color-zones">
+        <div class="color-zone">
+          <div class="cz-dot" style="background:#1e88e5;"></div>
+          <div>
+            <div class="cz-label" data-kaz="КӨК (СИНИЙ)" data-rus="СИНИЙ (КӨК)">КӨК (СИНИЙ)</div>
+            <div class="cz-desc">Палаты, кабинеты, коридоры, холлы, вестибюли. Синие мопы, ветошь, салфетки</div>
+          </div>
+        </div>
+        <div class="color-zone">
+          <div class="cz-dot" style="background:#e53935;"></div>
+          <div>
+            <div class="cz-label" data-kaz="ҚЫЗЫЛ (КРАСНЫЙ)" data-rus="КРАСНЫЙ (ҚЫЗЫЛ)">ҚЫЗЫЛ (КРАСНЫЙ)</div>
+            <div class="cz-desc">Санузлы, санитарные комнаты, комнаты временного хранения отходов, грязные зоны. Красные вёдра, швабры, ветошь и салфетки</div>
+          </div>
+        </div>
+        <div class="color-zone">
+          <div class="cz-dot" style="background:#43a047;"></div>
+          <div>
+            <div class="cz-label" data-kaz="ЖАСЫЛ (ЗЕЛЁНЫЙ)" data-rus="ЗЕЛЁНЫЙ (ЖАСЫЛ)">ЖАСЫЛ (ЗЕЛЁНЫЙ)</div>
+            <div class="cz-desc">Режимные помещения: операционные, перевязочные, процедурные, манипуляционные, стерильные зоны</div>
+          </div>
+        </div>
+        <div class="color-zone">
+          <div class="cz-dot" style="background:#f9a825;"></div>
+          <div>
+            <div class="cz-label" data-kaz="САРЫ (ЖЁЛТЫЙ)" data-rus="ЖЁЛТЫЙ (САРЫ)">САРЫ (ЖЁЛТЫЙ)</div>
+            <div class="cz-desc">Инвентарь для генеральных уборок, обработки мебели, стен, труднодоступных поверхностей</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="note-yel">
+        <strong data-kaz="Жиі кездесетін қате" data-rus="Частая ошибка">Жиі кездесетін қате</strong>
+        Когда в одном отделении красный цвет обозначает туалет, а в другом — процедурный кабинет. Такая система повышает риск перекрёстного заражения.
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span data-kaz="Жедел медициналық көмек станциясы" data-rus="Станция скорой медицинской помощи">Жедел медициналық көмек станциясы</span>
+  <br>
+  <span data-kaz="Аккредитация материалдары" data-rus="Материалы аккредитации">Аккредитация материалдары</span>
+</footer>
+
+<script src="lang.js"></script>
+<script>
+  function toggleProto(header) {
+    const card = header.closest('.proto-card');
+    card.classList.toggle('open');
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    initLang();
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      const target = document.getElementById(hash);
+      if (target) {
+        target.classList.add('open');
+        setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

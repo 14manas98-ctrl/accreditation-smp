@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ru" data-lang="kaz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Укладкалар — СМП</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .proto-card {
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .proto-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      cursor: pointer;
+      user-select: none;
+      background: #fff5f5;
+    }
+
+    .proto-color-bar {
+      width: 5px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      align-self: stretch;
+      min-height: 50px;
+      background: #e53935;
+    }
+
+    .proto-names { flex: 1; }
+
+    .proto-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #e53935;
+      line-height: 1.2;
+    }
+
+    .proto-subtitle {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      font-weight: 500;
+      margin-top: 3px;
+    }
+
+    .proto-ref {
+      font-size: 10px;
+      color: #aaa;
+      margin-top: 4px;
+    }
+
+    .proto-body {
+      display: none;
+      border-top: 1px solid rgba(0,0,0,0.07);
+      padding: 20px;
+      background: #fff5f5;
+    }
+
+    .proto-card.open .proto-body { display: block; animation: fadeIn 0.2s ease; }
+    .proto-card.open .card-chevron { transform: rotate(180deg); }
+
+    .proto-section-title {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .drug-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drug-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .drug-list li:last-child { border-bottom: none; }
+
+    .drug-name { font-weight: 500; flex: 1; }
+
+    .drug-dose {
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .drug-qty {
+      font-size: 12px;
+      font-weight: 600;
+      color: #e53935;
+      white-space: nowrap;
+      flex-shrink: 0;
+      min-width: 60px;
+      text-align: right;
+    }
+
+    .proto-note {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(0,0,0,0.07);
+      font-size: 12px;
+      color: #888;
+    }
+
+    .proto-note a {
+      color: #e53935;
+      text-decoration: none;
+    }
+
+    /* colour variants */
+    .pk-yel .proto-header,
+    .pk-yel .proto-body { background: #fffde7; }
+    .pk-yel .proto-color-bar { background: #f9a825; }
+    .pk-yel .proto-title { color: #f9a825; }
+    .pk-yel .drug-qty { color: #f9a825; }
+
+    .pk-blu .proto-header,
+    .pk-blu .proto-body { background: #e3f2fd; }
+    .pk-blu .proto-color-bar { background: #1e88e5; }
+    .pk-blu .proto-title { color: #1e88e5; }
+    .pk-blu .drug-qty { color: #1e88e5; }
+
+    .pk-grn .proto-header,
+    .pk-grn .proto-body { background: #e8f5e9; }
+    .pk-grn .proto-color-bar { background: #2e7d32; }
+    .pk-grn .proto-title { color: #2e7d32; }
+    .pk-grn .drug-qty { color: #2e7d32; }
+
+    .proto-note-red {
+      margin-top: 16px;
+      padding: 12px 14px;
+      background: #fff5f5;
+      border: 1px solid rgba(229,57,53,0.2);
+      border-left: 4px solid #e53935;
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .proto-note-red ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .proto-note-red li {
+      padding-left: 14px;
+      position: relative;
+    }
+
+    .proto-note-red li::before {
+      content: '!';
+      position: absolute;
+      left: 0;
+      font-weight: 700;
+      color: #e53935;
+      font-size: 11px;
+    }
+
+    .proto-note-blu {
+      margin-top: 10px;
+      padding: 12px 14px;
+      background: #e3f2fd;
+      border: 1px solid rgba(30,136,229,0.2);
+      border-left: 4px solid #1e88e5;
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .proto-note-blu strong {
+      display: block;
+      color: #1565c0;
+      font-size: 11px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    @media (max-width: 600px) {
+      .drug-list li { flex-wrap: wrap; gap: 4px; }
+      .drug-dose { width: 100%; }
+      .drug-qty { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <button class="nav-burger" onclick="toggleSidebar()">☰</button>
+    <a class="logo" href="index.html">
+      <div class="logo-badge">СМП</div>
+      <div class="logo-text">
+        <span class="logo-top">АККРЕДИТАЦИЯ</span>
+        <span class="logo-sub" data-kaz="Жедел медициналық көмек станциясы" data-rus="Станция скорой медицинской помощи">Жедел медициналық көмек станциясы</span>
+      </div>
+    </a>
+    <div class="lang-switch">
+      <button class="lang-btn" data-lang="kaz" onclick="setLang('kaz')">ҚАЗ</button>
+      <button class="lang-btn" data-lang="rus" onclick="setLang('rus')">РУС</button>
+    </div>
+  </div>
+</header>
+
+<div class="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <span class="sidebar-brand">СМП · АККРЕДИТАЦИЯ</span>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="index.html"><span data-kaz="Басты бет" data-rus="Главная">Басты бет</span></a>
+    <a href="codes.html"><span data-kaz="Кодтар" data-rus="Коды">Кодтар</span></a>
+    <a href="protocols.html" class="active"><span data-kaz="Укладкалар" data-rus="Укладки">Укладкалар</span></a>
+    <a href="sop.html"><span data-kaz="СОП" data-rus="СОП">СОП</span></a>
+    <a href="sanepid.html"><span data-kaz="Санэпид" data-rus="Санэпид">Санэпид</span></a>
+    <a href="documents.html"><span data-kaz="Құжаттар" data-rus="Документы">Құжаттар</span></a>
+    <a href="prikazy.html"><span data-kaz="Бұйрықтар" data-rus="Приказы">Бұйрықтар</span></a>
+  </nav>
+</div>
+
+<main class="page">
+
+  <h1 class="page-title" data-kaz="Укладкалар" data-rus="Укладки">Укладкалар</h1>
+  <p class="page-subtitle" data-kaz="Нұсқаулықты ашу үшін басыңыз" data-rus="Нажмите для раскрытия">Нұсқаулықты ашу үшін басыңыз</p>
+
+  <!-- ══════════ ОКС / STEMI ══════════ -->
+  <div class="proto-card" id="oks-stemi">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title" data-kaz="ОКС кезіндегі укладка" data-rus="Укладка при ОКС">ОКС кезіндегі укладка</div>
+        <div class="proto-subtitle" data-kaz="STEMI — ST-сегменті көтерілуі" data-rus="Инфаркт миокарда с подъёмом ST (STEMI)">STEMI — ST-сегменті көтерілуі</div>
+        <div class="proto-ref">Протокол №32 от 10.11.2017 г. МЗ РК</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+
+      <p class="proto-section-title" data-kaz="Дәрі-дәрмектер" data-rus="Препараты">Дәрі-дәрмектер</p>
+
+      <ul class="drug-list">
+        <li>
+          <span class="drug-name">Морфин</span>
+          <span class="drug-dose">1% — 1 мл (в бригаде)</span>
+          <span class="drug-qty">—</span>
+        </li>
+        <li>
+          <span class="drug-name">Ацетилсалициловая кислота</span>
+          <span class="drug-dose">500 мг</span>
+          <span class="drug-qty">1 уп.</span>
+        </li>
+        <li>
+          <span class="drug-name">Тикагрелол</span>
+          <span class="drug-dose">90 мг</span>
+          <span class="drug-qty">1 уп.</span>
+        </li>
+        <li>
+          <span class="drug-name">Клопидогрел</span>
+          <span class="drug-dose">75 мг</span>
+          <span class="drug-qty">1 уп.</span>
+        </li>
+        <li>
+          <span class="drug-name">Фондапаринукс шприц</span>
+          <span class="drug-dose">2,5 мг / 0,5 мл</span>
+          <span class="drug-qty">1 шприц</span>
+        </li>
+        <li>
+          <span class="drug-name">Гепасан</span>
+          <span class="drug-dose">5000 МЕ</span>
+          <span class="drug-qty">1 фл.</span>
+        </li>
+        <li>
+          <span class="drug-name">Альтеплаза</span>
+          <span class="drug-dose">50 мг</span>
+          <span class="drug-qty">2 фл.</span>
+        </li>
+        <li>
+          <span class="drug-name">Нитроглицерин аэрозоль</span>
+          <span class="drug-dose">0,4 мг/доза</span>
+          <span class="drug-qty">1 шт.</span>
+        </li>
+        <li>
+          <span class="drug-name">Натрия хлорид</span>
+          <span class="drug-dose">0,9% — 400 мл</span>
+          <span class="drug-qty">1 фл.</span>
+        </li>
+        <li>
+          <span class="drug-name">Бисопролол</span>
+          <span class="drug-dose">10 мг</span>
+          <span class="drug-qty">1 уп.</span>
+        </li>
+      </ul>
+
+      <p class="proto-note">
+        Негіз: <strong>Протокол №32 от 10.11.2017 г. МЗ РК</strong> —
+        Клинический протокол диагностики и лечения острого коронарного синдрома с подъёмом сегмента ST.
+      </p>
+
+    </div>
+  </div>
+
+  <!-- ══════════ АНАФИЛАКСИЯ ══════════ -->
+  <div class="proto-card pk-yel" id="anaphylaxis">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title" data-kaz="Анафилактикалық шок кезіндегі укладка" data-rus="Укладка при анафилактическом шоке">Анафилактикалық шок кезіндегі укладка</div>
+        <div class="proto-subtitle" data-kaz="Анафилактикалық шок" data-rus="Анафилактический шок">Анафилактикалық шок</div>
+        <div class="proto-ref">Приказ МЗ РК от 26.08.2021 № ҚР ДСМ-92</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+      <p class="proto-section-title" data-kaz="Дәрі-дәрмектер мен медициналық бұйымдар" data-rus="Препараты и изделия">Дәрі-дәрмектер мен медициналық бұйымдар</p>
+      <ul class="drug-list">
+        <li><span class="drug-name">Натрия хлорид 0,9%</span><span class="drug-dose">500 мл</span><span class="drug-qty">1 фл.</span></li>
+        <li><span class="drug-name">Преднизолон 30 мг №3</span><span class="drug-dose"></span><span class="drug-qty">2 уп.</span></li>
+        <li><span class="drug-name">Эпинефрин</span><span class="drug-dose"></span><span class="drug-qty">1 уп.</span></li>
+        <li><span class="drug-name">Система для инфузии</span><span class="drug-dose"></span><span class="drug-qty">2 шт.</span></li>
+        <li><span class="drug-name">Стерильные перчатки №7, 8</span><span class="drug-dose"></span><span class="drug-qty">6 пар</span></li>
+        <li><span class="drug-name">Шприцы 2,0; 5,0; 10,0; 20,0</span><span class="drug-dose">по 5 штук каждого</span><span class="drug-qty">20 шт.</span></li>
+        <li><span class="drug-name">Спирт 70%</span><span class="drug-dose"></span><span class="drug-qty">1 фл.</span></li>
+        <li><span class="drug-name">Стерильные ватные тампоны</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Жгут</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Одноразовые спиртовые салфетки</span><span class="drug-dose"></span><span class="drug-qty">5–6 шт.</span></li>
+        <li><span class="drug-name">Груша для отсасывания слизи</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Мешок Амбу</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Кислород</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Воздуховод резиновый стерильный</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Тонометр</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Фонендоскоп</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Тегадерм или лейкопластырь</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Вазофиксы №16</span><span class="drug-dose"></span><span class="drug-qty">2 шт.</span></li>
+        <li><span class="drug-name">Катетер Фолея №20–22</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Мешок для сбора мочи</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Стерильный шпатель</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+      </ul>
+      <p class="proto-note">Негіз: <strong>Приказ МЗ РК от 26.08.2021 № ҚР ДСМ-92</strong></p>
+    </div>
+  </div>
+
+  <!-- ══════════ АКУШЕРСКИЕ КРОВОТЕЧЕНИЯ ══════════ -->
+  <div class="proto-card" id="obstetric-bleeding">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title" data-kaz="Акушерлік қан кету кезіндегі укладка" data-rus="Укладка при акушерских кровотечениях">Акушерлік қан кету кезіндегі укладка</div>
+        <div class="proto-subtitle" data-kaz="Акушерлік қан кету" data-rus="Акушерские кровотечения">Акушерлік қан кету</div>
+        <div class="proto-ref">Приказ МЗ РК от 26.08.2021 № ҚР ДСМ-92</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+      <p class="proto-section-title" data-kaz="Дәрі-дәрмектер мен медициналық бұйымдар" data-rus="Препараты и изделия">Дәрі-дәрмектер мен медициналық бұйымдар</p>
+      <ul class="drug-list">
+        <li><span class="drug-name">Натрия хлорид 0,9%</span><span class="drug-dose">500 мл</span><span class="drug-qty">4 фл.</span></li>
+        <li><span class="drug-name">Окситоцин</span><span class="drug-dose"></span><span class="drug-qty">1 уп.</span></li>
+        <li><span class="drug-name">Мизопростол</span><span class="drug-dose"></span><span class="drug-qty">2 уп.</span></li>
+        <li><span class="drug-name">Шприцы 5,0</span><span class="drug-dose"></span><span class="drug-qty">4 шт.</span></li>
+        <li><span class="drug-name">Система для крови</span><span class="drug-dose"></span><span class="drug-qty">2 шт.</span></li>
+        <li><span class="drug-name">Система для инфузии</span><span class="drug-dose"></span><span class="drug-qty">3 шт.</span></li>
+        <li><span class="drug-name">Вазофиксы №14, 16</span><span class="drug-dose"></span><span class="drug-qty">2 шт.</span></li>
+        <li><span class="drug-name">Стерильные перчатки №7, 8</span><span class="drug-dose"></span><span class="drug-qty">6 пар</span></li>
+        <li><span class="drug-name">Тегадерм или лейкопластырь</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Жгут венозный</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Спирт 70%</span><span class="drug-dose"></span><span class="drug-qty">1 фл.</span></li>
+        <li><span class="drug-name">Стерильные ватные тампоны</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Одноразовые спиртовые салфетки</span><span class="drug-dose"></span><span class="drug-qty">5–6 шт.</span></li>
+        <li><span class="drug-name">Катетер Фолея №20–22</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Груша для отсасывания слизи</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Стерильный шпатель</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Мешок Амбу</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Кислород</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Воздуховод резиновый стерильный</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Тонометр</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Фонендоскоп</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Мешок для сбора мочи</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+      </ul>
+      <p class="proto-note">Негіз: <strong>Приказ МЗ РК от 26.08.2021 № ҚР ДСМ-92</strong></p>
+    </div>
+  </div>
+
+  <!-- ══════════ ПРЕЭКЛАМПСИЯ / ЭКЛАМПСИЯ ══════════ -->
+  <div class="proto-card pk-blu" id="preeclampsia">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title" data-kaz="Ауыр преэклампсия мен эклампсия кезіндегі укладка" data-rus="Укладка при тяжёлой преэклампсии и эклампсии">Ауыр преэклампсия мен эклампсия кезіндегі укладка</div>
+        <div class="proto-subtitle">Преэклампсия / Эклампсия</div>
+        <div class="proto-ref">Приказ МЗ РК от 26.08.2021 № ҚР ДСМ-92</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+      <p class="proto-section-title" data-kaz="Дәрі-дәрмектер мен медициналық бұйымдар" data-rus="Препараты и изделия">Дәрі-дәрмектер мен медициналық бұйымдар</p>
+      <ul class="drug-list">
+        <li><span class="drug-name">Магния сульфат 25%</span><span class="drug-dose">5 мл</span><span class="drug-qty">5 уп.</span></li>
+        <li><span class="drug-name">Натрия хлорид 0,9%</span><span class="drug-dose">400 мл</span><span class="drug-qty">1 фл.</span></li>
+        <li><span class="drug-name">Система для инфузии</span><span class="drug-dose"></span><span class="drug-qty">2 шт.</span></li>
+        <li><span class="drug-name">Шприцы 20,0 мл</span><span class="drug-dose"></span><span class="drug-qty">4 шт.</span></li>
+        <li><span class="drug-name">Шприцы 5,0 мл</span><span class="drug-dose"></span><span class="drug-qty">2 шт.</span></li>
+        <li><span class="drug-name">Нифедипин</span><span class="drug-dose"></span><span class="drug-qty">1 уп.</span></li>
+        <li><span class="drug-name">Стерильные перчатки №7, 8</span><span class="drug-dose"></span><span class="drug-qty">6 пар</span></li>
+        <li><span class="drug-name">Спирт 70%</span><span class="drug-dose"></span><span class="drug-qty">1 фл.</span></li>
+        <li><span class="drug-name">Стерильные ватные тампоны</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Одноразовые спиртовые салфетки</span><span class="drug-dose"></span><span class="drug-qty">5–6 шт.</span></li>
+        <li><span class="drug-name">Вазофиксы №14, 16</span><span class="drug-dose"></span><span class="drug-qty">2 шт.</span></li>
+        <li><span class="drug-name">Катетер Фолея №20–22</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Мешок для сбора мочи</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Тегадерм или лейкопластырь</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Жгут венозный</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Стерильный шпатель</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Груша для отсасывания слизи</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Мешок Амбу</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Кислород</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Воздуховод резиновый стерильный</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Тонометр</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+        <li><span class="drug-name">Фонендоскоп</span><span class="drug-dose"></span><span class="drug-qty">—</span></li>
+      </ul>
+      <p class="proto-note">Негіз: <strong>Приказ МЗ РК от 26.08.2021 № ҚР ДСМ-92</strong></p>
+    </div>
+  </div>
+
+  <!-- ══════════ КОД СИНИЙ ══════════ -->
+  <div class="proto-card pk-blu" id="blue-code">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title" data-kaz="Көк Код укладкасы" data-rus="Укладка Код Синий">Көк Код укладкасы</div>
+        <div class="proto-subtitle" data-kaz="Көк Код — Есінен тану / Реанимация" data-rus="Код Синий — Потеря сознания / Реанимация">Көк Код — Есінен тану / Реанимация</div>
+        <div class="proto-ref">Утверждено: Мищенко И.Б., 2026 г.</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+
+      <p class="proto-section-title" data-kaz="Дәрілік заттар" data-rus="Лекарственные средства">Дәрілік заттар</p>
+      <ul class="drug-list">
+        <li><span class="drug-name">Адреналин-Здоровье 0,18%</span><span class="drug-dose">1 мл</span><span class="drug-qty">10 шт.</span></li>
+        <li><span class="drug-name">Допамин</span><span class="drug-dose">40 мг/мл — 5 мл</span><span class="drug-qty">5 шт.</span></li>
+        <li><span class="drug-name">Лидокаин 2%</span><span class="drug-dose">2 мл</span><span class="drug-qty">5 шт.</span></li>
+        <li><span class="drug-name">Натрия хлорид 0,9%</span><span class="drug-dose">5 мл</span><span class="drug-qty">10 шт.</span></li>
+        <li><span class="drug-name">Натрия хлорид 0,9%</span><span class="drug-dose">200 мл</span><span class="drug-qty">3 шт.</span></li>
+        <li><span class="drug-name">Натрия хлорид 0,9%</span><span class="drug-dose">400 мл</span><span class="drug-qty">3 шт.</span></li>
+        <li><span class="drug-name">Сантодарон</span><span class="drug-dose">150 мг/3 мл</span><span class="drug-qty">2 шт.</span></li>
+      </ul>
+
+      <p class="proto-section-title" style="margin-top:18px;" data-kaz="Медициналық бұйымдар" data-rus="Медицинские изделия">Медициналық бұйымдар</p>
+      <ul class="drug-list">
+        <li><span class="drug-name">Бинт нестерильный</span><span class="drug-dose">7×14</span><span class="drug-qty">2 шт.</span></li>
+        <li><span class="drug-name">Вазофикс №14</span><span class="drug-dose"></span><span class="drug-qty">2 шт.</span></li>
+        <li><span class="drug-name">Вазофикс №16</span><span class="drug-dose"></span><span class="drug-qty">2 шт.</span></li>
+        <li><span class="drug-name">Вазофикс №18</span><span class="drug-dose"></span><span class="drug-qty">2 шт.</span></li>
+        <li><span class="drug-name">Вазофикс №20</span><span class="drug-dose"></span><span class="drug-qty">2 шт.</span></li>
+        <li><span class="drug-name">Вазофикс №22</span><span class="drug-dose"></span><span class="drug-qty">2 шт.</span></li>
+        <li><span class="drug-name">Гибкий стилет для эндотрахеальной трубки</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Жгут автоматический</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Жгут кровоостанавливающий</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Клинок для ларингоскопа размер 0</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Клинок для ларингоскопа размер 1</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Клинок для ларингоскопа размер 2</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Клинок для ларингоскопа размер 3</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Клинок для ларингоскопа размер 4</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Клинок для ларингоскопа размер 5</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Лейкопластырь</span><span class="drug-dose">2×500</span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Маска одноразовая на резинках</span><span class="drug-dose"></span><span class="drug-qty">6 шт.</span></li>
+        <li><span class="drug-name">Мешок Амбу с лицевой маской</span><span class="drug-dose"></span><span class="drug-qty">2 шт.</span></li>
+        <li><span class="drug-name">Перчатки стерильные</span><span class="drug-dose"></span><span class="drug-qty">2 шт.</span></li>
+        <li><span class="drug-name">Перчатки нестерильные</span><span class="drug-dose"></span><span class="drug-qty">6 шт.</span></li>
+        <li><span class="drug-name">Прямой адаптер 70 мм белый</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Прямой адаптер 80 мм зелёный</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Прямой адаптер 90 мм жёлтый</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Роторасширитель металлический с кремальерой</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Рукоятка для ларингоскопа</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Салфетка стерильная 10×10 №20</span><span class="drug-dose"></span><span class="drug-qty">5 шт.</span></li>
+        <li><span class="drug-name">Салфетка спиртовая</span><span class="drug-dose">65×56</span><span class="drug-qty">10 шт.</span></li>
+        <li><span class="drug-name">Система для инфузий</span><span class="drug-dose"></span><span class="drug-qty">2 шт.</span></li>
+        <li><span class="drug-name">Тонометр с фонендоскопом</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Тройник для систем</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Трубка эндотрахеальная</span><span class="drug-dose">8 мм</span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Трубка эндотрахеальная</span><span class="drug-dose">7,5 мм</span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Трубка эндотрахеальная</span><span class="drug-dose">2,5 / 3,0 / 4,0 мм</span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Фильтр дыхательный антимикробный</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Шприц инъекционный 2,0</span><span class="drug-dose"></span><span class="drug-qty">3 шт.</span></li>
+        <li><span class="drug-name">Шприц инъекционный 5,0</span><span class="drug-dose"></span><span class="drug-qty">3 шт.</span></li>
+        <li><span class="drug-name">Шприц инъекционный 10,0</span><span class="drug-dose"></span><span class="drug-qty">3 шт.</span></li>
+        <li><span class="drug-name">Шприц инъекционный 20,0</span><span class="drug-dose"></span><span class="drug-qty">3 шт.</span></li>
+        <li><span class="drug-name">Шприц Жане</span><span class="drug-dose">150 мл</span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Маска ларингеальная 1/5</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Маска ларингеальная 1</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Маска ларингеальная 2</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Маска ларингеальная 3</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Маска ларингеальная 4</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Маска ларингеальная 5</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+      </ul>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════ ООИ — ХОЛЕРА ══════════ -->
+  <div class="proto-card pk-grn" id="ooi-cholera">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title" data-kaz="ООИ бойынша укладка — Тырысқақ" data-rus="Укладка по ООИ — Холера">ООИ бойынша укладка — Тырысқақ</div>
+        <div class="proto-subtitle" data-kaz="АСА ҚАУІПТІ ИНФЕКЦИЯЛАР — ТЫРЫСҚАҚ" data-rus="ОСОБО ОПАСНЫЕ ИНФЕКЦИИ — ХОЛЕРА">АСА ҚАУІПТІ ИНФЕКЦИЯЛАР — ТЫРЫСҚАҚ</div>
+        <div class="proto-ref" data-kaz="ҚР ДСМ министрінің 2021 жылғы 17 қарашадағы № ҚР ДСМ-116 бұйрығы" data-rus="Приказ МЗ РК от 17 ноября 2021 года № ҚР ДСМ-116">ҚР ДСМ министрінің 2021 жылғы 17 қарашадағы № ҚР ДСМ-116 бұйрығы</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+
+      <p class="proto-section-title" data-kaz="Тырысқаққа күдікті науқастан (мәйіттен) материал алуға арналған жинақтың құрамы" data-rus="Комплект для забора материала от больного (трупа) с подозрением на холеру">Тырысқаққа күдікті науқастан (мәйіттен) материал алуға арналған жинақтың құрамы</p>
+
+      <ul class="drug-list">
+        <li><span class="drug-name">Банки стерильные широкогорлые с притёртыми крышками</span><span class="drug-dose"></span><span class="drug-qty">4 шт.</span></li>
+        <li><span class="drug-name">Стеклянные трубочки: диаметр 5 мм, длина ≥ 25 см, стерильные, с ватным тампоном с одного конца</span><span class="drug-dose"></span><span class="drug-qty">4 шт.</span></li>
+        <li><span class="drug-name">Резиновая груша со шлангом</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Лейкопластырь</span><span class="drug-dose"></span><span class="drug-qty">1 уп.</span></li>
+        <li><span class="drug-name">Карандаш</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Полиэтиленовые пакеты</span><span class="drug-dose"></span><span class="drug-qty">8 шт.</span></li>
+        <li><span class="drug-name">Марлевые салфетки 40×40 см</span><span class="drug-dose"></span><span class="drug-qty">8 шт.</span></li>
+        <li><span class="drug-name">Бикс металлический</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Дезинфектант</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Алюминиевые петли с пробирками</span><span class="drug-dose"></span><span class="drug-qty">3 шт.</span></li>
+        <li><span class="drug-name">Спирт 70%</span><span class="drug-dose"></span><span class="drug-qty">200 г</span></li>
+        <li><span class="drug-name">1% пептонная вода</span><span class="drug-dose"></span><span class="drug-qty">50 мл</span></li>
+        <li><span class="drug-name">Инструкция по забору материала</span><span class="drug-dose"></span><span class="drug-qty">1 шт.</span></li>
+        <li><span class="drug-name">Клеёнка медицинская</span><span class="drug-dose"></span><span class="drug-qty">1 м</span></li>
+        <li><span class="drug-name">Направление на анализ (бланки)</span><span class="drug-dose"></span><span class="drug-qty">4 шт.</span></li>
+      </ul>
+
+      <div class="proto-note-red">
+        <ul>
+          <li>При выезде на вскрытие трупа человека умершего с подозрением на ЧУМУ бригада дополнительно берёт <strong>ПРОЗЕКТОРСКИЙ НАБОР</strong></li>
+          <li>Подлежащие обеззараживанию предметы стерилизуются 1 раз в месяц</li>
+        </ul>
+      </div>
+
+      <div class="proto-note-blu">
+        <strong data-kaz="Маңызды" data-rus="Важно">Маңызды</strong>
+        Соблюдайте правила асептики и биологической безопасности! Каждый предмет должен использоваться строго по назначению.<br>
+        Работать в перчатках · Использовать СИЗ · Мыть руки после работы · Утилизировать отходы безопасно
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span data-kaz="Жедел медициналық көмек станциясы" data-rus="Станция скорой медицинской помощи">Жедел медициналық көмек станциясы</span>
+  <br>
+  <span data-kaz="Аккредитация материалдары" data-rus="Материалы аккредитации">Аккредитация материалдары</span>
+</footer>
+
+<script src="lang.js"></script>
+<script>
+  function toggleProto(header) {
+    const card = header.closest('.proto-card');
+    card.classList.toggle('open');
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    initLang();
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      const target = document.getElementById(hash);
+      if (target) {
+        target.classList.add('open');
+        setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

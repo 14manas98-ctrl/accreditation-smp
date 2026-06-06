@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ru" data-lang="kaz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Кодтар — СМП</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <button class="nav-burger" onclick="toggleSidebar()">☰</button>
+    <a class="logo" href="index.html">
+      <div class="logo-badge">СМП</div>
+      <div class="logo-text">
+        <span class="logo-top">АККРЕДИТАЦИЯ</span>
+        <span class="logo-sub" data-kaz="Жедел медициналық көмек станциясы" data-rus="Станция скорой медицинской помощи">Жедел медициналық көмек станциясы</span>
+      </div>
+    </a>
+    <div class="lang-switch">
+      <button class="lang-btn" data-lang="kaz" onclick="setLang('kaz')">ҚАЗ</button>
+      <button class="lang-btn" data-lang="rus" onclick="setLang('rus')">РУС</button>
+    </div>
+  </div>
+</header>
+
+<div class="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <span class="sidebar-brand">СМП · АККРЕДИТАЦИЯ</span>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="index.html"><span data-kaz="Басты бет" data-rus="Главная">Басты бет</span></a>
+    <a href="codes.html" class="active"><span data-kaz="Кодтар" data-rus="Коды">Кодтар</span></a>
+    <a href="protocols.html"><span data-kaz="Укладкалар" data-rus="Укладки">Укладкалар</span></a>
+    <a href="sop.html"><span data-kaz="СОП" data-rus="СОП">СОП</span></a>
+    <a href="sanepid.html"><span data-kaz="Санэпид" data-rus="Санэпид">Санэпид</span></a>
+    <a href="documents.html"><span data-kaz="Құжаттар" data-rus="Документы">Құжаттар</span></a>
+    <a href="prikazy.html"><span data-kaz="Бұйрықтар" data-rus="Приказы">Бұйрықтар</span></a>
+  </nav>
+</div>
+
+<main class="page">
+
+  <h1 class="page-title" data-kaz="Кодтар" data-rus="Коды">Кодтар</h1>
+  <p class="page-subtitle" data-kaz="Нұсқаулықты ашу үшін басыңыз" data-rus="Нажмите для раскрытия">Нұсқаулықты ашу үшін басыңыз</p>
+
+  <!-- ══════════ КРАСНЫЙ ══════════ -->
+  <div class="code-card cc-red" id="red">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="card-color-bar"></div>
+      <div class="card-names">
+        <div class="card-kaz" data-kaz="ҚЫЗЫЛ КОД" data-rus="КОД КРАСНЫЙ">ҚЫЗЫЛ КОД</div>
+        <div class="card-rus" data-kaz="Өрт / Өртану" data-rus="Пожар / Возгорание">Өрт / Өртану</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="bilingual-columns">
+
+        <div class="lang-block lb-kaz">
+          <h4>Іс-қимыл тәртібі</h4>
+          <p>Станция ауымғында немесе ғимарат ішінде өрт белгілері анықталған, тұтін / өрт пайда болған жайдайда:</p>
+          <ul class="actions-list">
+            <li>
+              <span class="action-label">ҚҰТҚАРУ</span>
+              Қауіп төнген барлық адамдарды эвакуациялаңыз
+            </li>
+            <li>
+              <span class="action-label">ДАБЫЛ БЕРУ</span>
+              «Қызыл Код» дабыл сигналін беру (өрт орнын көрсете айту)
+            </li>
+            <li>
+              <span class="action-label">ОҚШАУЛАУ</span>
+              Барлық есіктер мен айнектерді жабу (тазы ауа айналымын болдырмау, өрттің таралуына жол бермеу)
+            </li>
+            <li>
+              <span class="action-label">ӨРТ СӨНДІРУ</span>
+              Тұтік су құбырымен (мүмкіндігінше) және өрт сөндіргішпен сөндіру
+            </li>
+            <li>Электр жабдықтары мен медициналық аппаратураны қамтамасыз ету</li>
+            <li>Басшының нұсқауы бойынша ТЖД құтқару қызметіне №101, №112 телефоны арқылы объектінің атауын, орнын, мекен-жайын, анықталу уақытын хабарлаңыз</li>
+          </ul>
+          <div class="note-box">
+            <strong>Назар аудырыңыз</strong>
+            Өрт және басқа да ТЖ уақытында лифтті қолдануға тыйым салынады.
+            <br><br>
+            <strong>Өрт сөндіргіш қолдану тәртібі:</strong>
+            <ul class="sub-steps">
+              <li>Пломбаны жұлу</li>
+              <li>Мунды жұлу</li>
+              <li>1–3 метр қашықтықтан өрт ошағына бағыттау</li>
+              <li>Тетікті басу</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="lang-block lb-rus">
+          <h4>Порядок действий</h4>
+          <p>В случае обнаружения признаков возгорания / пожара в здании или на территории Станции:</p>
+          <p>Персонал, находящийся в непосредственной близости к огню, должен:</p>
+          <ul class="actions-list">
+            <li>
+              <span class="action-label">СПАСТИ</span>
+              Эвакуировать всех людей, находящихся в непосредственной близости к огню (с указанием места пожара)
+            </li>
+            <li>
+              <span class="action-label">ТРЕВОГА</span>
+              Подать сигнал «Код Красный» с указанием места пожара
+            </li>
+            <li>
+              <span class="action-label">ИЗОЛИРОВАТЬ</span>
+              Закрыть все двери и окна (свежий воздух способствует распространению пожара)
+            </li>
+            <li>
+              <span class="action-label">ТУШИТЬ</span>
+              Огнетушителем и пожарным рукавом (по мере возможности)
+            </li>
+            <li>Обеспечить электропитание и оборудование</li>
+            <li>По указанию руководства сообщить по тел. №101, №112 — наименование объекта, его адрес, время обнаружения</li>
+          </ul>
+          <div class="note-box">
+            <strong>Внимание! Во время пожара и других ЧС пользоваться лифтами запрещено.</strong>
+            <br><br>
+            <strong>Алгоритм использования огнетушителя:</strong>
+            <ul class="sub-steps">
+              <li>Сорвать пломбу</li>
+              <li>Выдернуть чеку</li>
+              <li>Направить на очаг пожара на расстоянии от 1 до 3 метров</li>
+              <li>Нажать на рычаг</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+      <div class="phones-row">
+        <a class="phone-chip" href="tel:114">114 <span data-kaz="ТЖ коды" data-rus="Код ЧС">ТЖ коды</span></a>
+        <a class="phone-chip" href="tel:112">112 <span data-kaz="Құтқару" data-rus="Спасение">Құтқару</span></a>
+        <a class="phone-chip" href="tel:101">101 <span data-kaz="Өртшілер" data-rus="Пожарные">Өртшілер</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ СИНИЙ ══════════ -->
+  <div class="code-card cc-blue" id="blue">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="card-color-bar"></div>
+      <div class="card-names">
+        <div class="card-kaz" data-kaz="КӨК КОД" data-rus="КОД СИНИЙ">КӨК КОД</div>
+        <div class="card-rus" data-kaz="Есінен тану" data-rus="Потеря сознания">Есінен тану</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="bilingual-columns">
+
+        <div class="lang-block lb-kaz">
+          <h4>Іс-қимыл тәртібі</h4>
+          <p>Есі жоғалтқан немесе жүрегі тоқтаған адамды байқаған кезде («Код Синий» нұсқаулығы бойынша):</p>
+          <p>«КӨК КОД» жайдайында кызметкерлердің әрекеті:</p>
+          <ul class="actions-list">
+            <li>114, 32-00-24 нөміріне Код Синий командасына хабарлаңыз. Ауысымның аға дәрігеріне хабарлаңыз: қабат, блок, бөлімше, аты-жөні мен лауазымыңыз</li>
+            <li>Жардем шеккен адамның қауіпсіздігін қамтамасыз ету</li>
+            <li>Базалық жедел жардем қызметіне кіріс — <strong>BLS</strong> (Базалық өміртіршілік қолдау)</li>
+          </ul>
+        </div>
+
+        <div class="lang-block lb-rus">
+          <h4>Порядок действий</h4>
+          <p>При необходимости оказания неотложной помощи пострадавшему при потере сознания или остановке сердца (см. Руководство «Код Синий»):</p>
+          <p>Действия персонала при «КОД СИНИЙ»:</p>
+          <ul class="actions-list">
+            <li>Сообщить команде Код Синий по тел. 114, 32-00-24. Старший врач смены: этаж, блок, структурное подразделение, фамилию и должность</li>
+            <li>Обеспечить безопасность пострадавшего</li>
+            <li>Приступить к оказанию базовой нео-лечебной помощи — <strong>BLS</strong> (Basic Life Support)</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="phones-row">
+        <a class="phone-chip" href="tel:114">114 <span data-kaz="Көк Код" data-rus="Код Синий">Көк Код</span></a>
+        <a class="phone-chip" href="tel:3200024">32-00-24 <span data-kaz="Аға дәрігер" data-rus="Ст. врач смены">Аға дәрігер</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ ЖЁЛТЫЙ ══════════ -->
+  <div class="code-card cc-yel" id="yellow">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="card-color-bar"></div>
+      <div class="card-names">
+        <div class="card-kaz" data-kaz="САРЫ КОД" data-rus="КОД ЖЁЛТЫЙ">САРЫ КОД</div>
+        <div class="card-rus" data-kaz="Химиялық улану" data-rus="Химическое отравление">Химиялық улану</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="bilingual-columns">
+
+        <div class="lang-block lb-kaz">
+          <h4>Іс-қимыл тәртібі</h4>
+          <p>ҮЗ (өте улы зат), радиоактивті және химиялық заттармен улану жайдайында:</p>
+          <p>«САРЫ КОД» жайдайында кызметкерлердің әрекеті:</p>
+          <ul class="actions-list">
+            <li>Химиялық немесе дезинфекциялық сұйықтықтар төгілген кезде: станция басшылығына хабарлаңыз, «Сары код» туралы 114, 32-00-24 нөміріне ауысымның аға дәрігеріне хабарлаңыз — қабат, блок, бөлімше, аты-жөні мен лауазымыңыз</li>
+            <li>8-701-5885403 ММ ШБ жане ТЖ мекен-жайы мен телефоны арқылы хабарлаңыз; бөлімше атауын, блокты хабарлаңыз, өзіңіз аты-жөні мен лауазымыңыз</li>
+            <li>Аймақтың қауіпсіздігін қамтамасыз ету, оқшаулаңыз</li>
+            <li>ТЖ салдарын жоюға кірісіңіз</li>
+          </ul>
+        </div>
+
+        <div class="lang-block lb-rus">
+          <h4>Порядок действий</h4>
+          <p>В случае отравления СДЯВ (сильнодействующих ядовитых веществ), радиационными и химическими веществами.</p>
+          <p>При разливах химии или дезинфицирующих жидкостей или порошкообразных веществ — сотрудник должен:</p>
+          <ul class="actions-list">
+            <li>Поставить в известность руководство Станции. Сообщить о «Коде Жёлтом» по тел. 114, 32-00-24 старшему врачу смены: этаж, блок, структурное подразделение, фамилию и должность</li>
+            <li>Сообщить 8-701-5885403 НШ ГО и ЧС, место происшествия (этаж, блок, структурное подразделение), своё фамилию и должность</li>
+            <li>Обеспечить безопасность окружающих, изолировать зону</li>
+            <li>Приступить к ликвидации последствий ЧС</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="phones-row">
+        <a class="phone-chip" href="tel:114">114 <span data-kaz="Сары Код" data-rus="Код Жёлтый">Сары Код</span></a>
+        <a class="phone-chip" href="tel:3200024">32-00-24 <span data-kaz="Аға дәрігер" data-rus="Ст. врач смены">Аға дәрігер</span></a>
+        <a class="phone-chip" href="tel:87015885403">8-701-588-5403 <span data-kaz="НШ ГО / ТЖ" data-rus="НШ ГО / ЧС">НШ ГО / ТЖ</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ БЕЛЫЙ ══════════ -->
+  <div class="code-card cc-whi" id="white">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="card-color-bar"></div>
+      <div class="card-names">
+        <div class="card-kaz" data-kaz="АҚ КОД" data-rus="КОД БЕЛЫЙ">АҚ КОД</div>
+        <div class="card-rus" data-kaz="Пациент агрессиясы" data-rus="Агрессия пациента">Пациент агрессиясы</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="bilingual-columns">
+
+        <div class="lang-block lb-kaz">
+          <h4>Іс-қимыл тәртібі</h4>
+          <p>Пациенттің немесе келушінің агрессия көрсету жайдайында («Ақ кодын» нұсқаулығына қараңыз):</p>
+          <p>Ақ код жайдай туындаған кездегі әрекет тәртібі — Құрылымдық бөлімше кызметкері міндеті:</p>
+          <ul class="actions-list">
+            <li>Жағдайдың ерекше араласуды қажет ететініне көз жеткізу</li>
+            <li>«Ақ Код» туралы хабарлаңыз: 112 жусет, 8-701-5885403 ММ ШБ телефоны арқылы; қабат, блок, бөлімше, аты-жөні мен лауазымыңызды айтыңыз</li>
+            <li>Өзіңіз бен айналасыңыздың қауіпсіздігін қамтамасыз ету</li>
+            <li>Ақ код командасының жетекшісіне жайдай туралы толық ақпарат беріңіз</li>
+          </ul>
+        </div>
+
+        <div class="lang-block lb-rus">
+          <h4>Порядок действий</h4>
+          <p>В случае агрессии пациента или посетителя (см. СОП «Код Белый»):</p>
+          <p>Порядок действий при возникновении ситуации Код Белый — Сотрудник структурных подразделений должен:</p>
+          <ul class="actions-list">
+            <li>Убедиться, что ситуация требует особого вмешательства</li>
+            <li>Сообщить Код Белый по телефону — охрана: 112, 8-701-5885403 НШ ГО и ЧС; место происшествия (этаж, блок, структурное подразделение), фамилию и должность</li>
+            <li>Обеспечить безопасность себя и своих коллег</li>
+            <li>Обеспечить детальной информацией по чрезвычайной ситуации Лидера команды Код Белый</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="phones-row">
+        <a class="phone-chip" href="tel:112">112 <span data-kaz="Күзет" data-rus="Охрана">Күзет</span></a>
+        <a class="phone-chip" href="tel:87015885403">8-701-588-5403 <span data-kaz="НШ ГО / ТЖ" data-rus="НШ ГО / ЧС">НШ ГО / ТЖ</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ РОЗОВЫЙ ══════════ -->
+  <div class="code-card cc-pnk" id="pink">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="card-color-bar"></div>
+      <div class="card-names">
+        <div class="card-kaz" data-kaz="ҚЫЗҒЫЛТ КОД" data-rus="КОД РОЗОВЫЙ">ҚЫЗҒЫЛТ КОД</div>
+        <div class="card-rus" data-kaz="Баланың өміріне қауіп" data-rus="Угроза жизни ребёнка">Баланың өміріне қауіп</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="bilingual-columns">
+        <div class="lang-block lb-kaz">
+          <h4>Іс-қимыл тәртібі</h4>
+          <p>Баланың өміріне қауіп төнген жағдайда (Қызғылт кодының нұсқаулығына қараңыз)</p>
+          <p>Қызғылт код жайдайда кездегі әрекет тәртібі — Құрылымдық бөлімше қызметкерлері міндетті:</p>
+          <ul class="actions-list">
+            <li>Жағдайдың ерекше медициналық араласуды қажет ететініне көз жеткізу</li>
+            <li>Қызғылт код командасына 112 нөмір, 8-701-5885403 телефондары арқылы хабарлау (қабат, блок, бөлімше, аты-жөні, лауазымы)</li>
+            <li>Өзінің және айналасындағылардың қауіпсіздігін қамтамасыз ету</li>
+            <li>Бала жанында болып, тыныс алуын, жүрек соғысын бақылау</li>
+            <li>Қызғылт код командасының келуіне дейін базалық реанимациялық көмек көрсету (BLS)</li>
+          </ul>
+        </div>
+        <div class="lang-block lb-rus">
+          <h4>Порядок действий</h4>
+          <p>При угрозе жизни ребёнка (см. СОП «Код Розовый»)</p>
+          <p>Порядок действий при объявлении Код Розовый — Сотрудник структурного подразделения обязан:</p>
+          <ul class="actions-list">
+            <li>Убедиться, что ситуация требует экстренного медицинского вмешательства</li>
+            <li>Сообщить команде Код Розовый по телефону — 112, 8-701-5885403; этаж, блок, подразделение, фамилию и должность</li>
+            <li>Обеспечить безопасность ребёнка и окружающих</li>
+            <li>Находиться рядом с ребёнком, контролировать дыхание и пульс</li>
+            <li>До прибытия команды оказать базовую сердечно-лёгочную реанимацию (BLS)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phones-row">
+        <a class="phone-chip" href="tel:112">112 <span data-kaz="Педиатрия" data-rus="Педиатрия">Педиатрия</span></a>
+        <a class="phone-chip" href="tel:87015885403">8-701-5885403 <span data-kaz="НШ ГО / ТЖ" data-rus="НШ ГО / ЧС">НШ ГО / ТЖ</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ ЧЁРНЫЙ ══════════ -->
+  <div class="code-card cc-blk" id="black">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="card-color-bar"></div>
+      <div class="card-names">
+        <div class="card-kaz" data-kaz="ҚАРА КОД" data-rus="КОД ЧЁРНЫЙ">ҚАРА КОД</div>
+        <div class="card-rus" data-kaz="Жарылыс қаупі" data-rus="Угроза взрыва">Жарылыс қаупі</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="bilingual-columns">
+
+        <div class="lang-block lb-kaz">
+          <h4>Іс-қимыл тәртібі</h4>
+          <p>Жарылыс қаупі төнген кезде, салынған бомба туралы хабарламалар алынған кезде (телефон арқылы немесе басқа тәсілмен), станция ауымында және ғимаратта жарылыс қаупі бар күдікті зат табылған жайдайда:</p>
+          <p>Қара кодын жария еткенде кызметкерлердің әрекеті:</p>
+          <ul class="actions-list">
+            <li>
+              Өз бастамасымен немесе басшының нұсқауы бойынша хабарлаңыз:
+              <ul class="sub-steps" style="margin-top:6px;">
+                <li>102 — Полиция (ДП дежурлық бөлімі)</li>
+                <li>112 — ТЖД құтқару қызметі</li>
+                <li>39-16-67 — ІКД дежурлық қызметі</li>
+              </ul>
+            </li>
+            <li>Объектінің атауын, мекен-жайын, анықталған уақытты хабарлаңыз</li>
+            <li>Құқық қорғау органдары, аварийлық-құтқару қызметтері келгенге дейін персонал мен келушілерді эвакуациялаңыз; күдікті зат табылған жерді адамдардан аулақтатыңыз</li>
+            <li>Күдікті затқа жақындамаңыз, оны ұстамаңыз</li>
+          </ul>
+        </div>
+
+        <div class="lang-block lb-rus">
+          <h4>Порядок действий</h4>
+          <p>При угрозе взрыва, получении сообщений о заложенной бомбе (по телефону или другим способом), обнаружении подозрительного предмета похожего на взрывное устройство на территории и здании Станции:</p>
+          <p>Действия персонала при объявлении Кода Черный:</p>
+          <ul class="actions-list">
+            <li>
+              По указанию руководителя или самостоятельно сообщить:
+              <ul class="sub-steps" style="margin-top:6px;">
+                <li>102 — Полиция (дежурная часть ДП)</li>
+                <li>112 — Служба спасения ДЧС</li>
+                <li>39-16-67 — Дежурный ДЧБ</li>
+              </ul>
+            </li>
+            <li>Указать наименование объекта, адрес, время обнаружения</li>
+            <li>До прибытия правоохранительных органов, аварийно-спасательных служб принять меры к оповещению и эвакуации персонала и посетителей; ограждать от граждан место нахождения подозрительного предмета</li>
+            <li>Не приближаться и не трогать подозрительный предмет</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="phones-row">
+        <a class="phone-chip" href="tel:102">102 <span data-kaz="Полиция / ДП" data-rus="Полиция / ДП">Полиция / ДП</span></a>
+        <a class="phone-chip" href="tel:112">112 <span data-kaz="ДЧС / Құтқару" data-rus="ДЧС / Спасение">ДЧС / Құтқару</span></a>
+        <a class="phone-chip" href="tel:391667">39-16-67 <span data-kaz="Дежурный ДЧБ" data-rus="Дежурный ДЧБ">Дежурный ДЧБ</span></a>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span data-kaz="Жедел медициналық көмек станциясы" data-rus="Станция скорой медицинской помощи">Жедел медициналық көмек станциясы</span>
+  <br>
+  <span data-kaz="Аккредитация материалдары" data-rus="Материалы аккредитации">Аккредитация материалдары</span>
+</footer>
+
+<script src="lang.js"></script>
+<script>
+  function toggleCard(header) {
+    const card = header.closest('.code-card');
+    card.classList.toggle('open');
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    initLang();
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      const target = document.getElementById(hash);
+      if (target) {
+        target.classList.add('open');
+        setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

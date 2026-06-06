@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ru" data-lang="kaz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Құжаттар — СМП</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .proto-card {
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .proto-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .proto-color-bar {
+      width: 5px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      align-self: stretch;
+      min-height: 50px;
+    }
+
+    .proto-names { flex: 1; }
+
+    .proto-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .proto-subtitle {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      font-weight: 500;
+      margin-top: 3px;
+    }
+
+    .proto-ref {
+      font-size: 10px;
+      color: #aaa;
+      margin-top: 4px;
+    }
+
+    .proto-body {
+      display: none;
+      border-top: 1px solid rgba(0,0,0,0.07);
+      padding: 20px;
+    }
+
+    .proto-card.open .proto-body { display: block; animation: fadeIn 0.2s ease; }
+    .proto-card.open .card-chevron { transform: rotate(180deg); }
+
+    .proto-section-title {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .proto-section-title.mt { margin-top: 20px; }
+
+    /* Document metadata block */
+    .doc-meta {
+      background: rgba(255,255,255,0.6);
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+
+    .doc-meta-row {
+      font-size: 12px;
+      color: var(--text);
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      line-height: 1.45;
+    }
+
+    .doc-meta-row:last-child { border-bottom: none; }
+
+    .doc-meta-label {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    /* Color zones */
+    .color-zones { display: flex; flex-direction: column; gap: 0; }
+
+    .color-zone {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .color-zone:last-child { border-bottom: none; }
+
+    .cz-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .cz-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .cz-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+    /* Triage cards */
+    .triage-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .triage-item {
+      border-radius: 8px;
+      overflow: hidden;
+      border-left: 4px solid transparent;
+    }
+
+    .ti-cat {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px 5px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .ti-desc {
+      padding: 2px 14px 6px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .ti-examples {
+      padding: 0 14px 10px;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .ti-red { background: #fff5f5; border-left-color: #e53935; }
+    .ti-red .ti-cat { color: #c62828; }
+    .ti-yel { background: #fffde7; border-left-color: #f9a825; }
+    .ti-yel .ti-cat { color: #e65100; }
+    .ti-grn { background: #f1f8e9; border-left-color: #2e7d32; }
+    .ti-grn .ti-cat { color: #1b5e20; }
+    .ti-blk { background: #f5f5f5; border-left-color: #424242; }
+    .ti-blk .ti-cat { color: #212121; }
+
+    .triage-def {
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.5);
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.07);
+    }
+
+    /* Notes */
+    .note-red {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-left: 4px solid #e53935;
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.55;
+      background: rgba(229,57,53,0.07);
+    }
+
+    .note-red strong { color: #c62828; }
+
+    .note-blu {
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-left: 4px solid #1e88e5;
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.55;
+      background: rgba(30,136,229,0.07);
+    }
+
+    .note-blu strong {
+      display: block;
+      color: #1565c0;
+      font-size: 11px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    /* Color variants */
+    .pk-blu .proto-header,
+    .pk-blu .proto-body { background: #e3f2fd; }
+    .pk-blu .proto-color-bar { background: #1e88e5; }
+    .pk-blu .proto-title { color: #1565c0; }
+
+    .pk-red .proto-header,
+    .pk-red .proto-body { background: #ffebee; }
+    .pk-red .proto-color-bar { background: #e53935; }
+    .pk-red .proto-title { color: #c62828; }
+
+    @media (max-width: 600px) {
+      .ti-cat { font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <button class="nav-burger" onclick="toggleSidebar()">☰</button>
+    <a class="logo" href="index.html">
+      <div class="logo-badge">СМП</div>
+      <div class="logo-text">
+        <span class="logo-top">АККРЕДИТАЦИЯ</span>
+        <span class="logo-sub" data-kaz="Жедел медициналық көмек станциясы" data-rus="Станция скорой медицинской помощи">Жедел медициналық көмек станциясы</span>
+      </div>
+    </a>
+    <div class="lang-switch">
+      <button class="lang-btn" data-lang="kaz" onclick="setLang('kaz')">ҚАЗ</button>
+      <button class="lang-btn" data-lang="rus" onclick="setLang('rus')">РУС</button>
+    </div>
+  </div>
+</header>
+
+<div class="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <span class="sidebar-brand">СМП · АККРЕДИТАЦИЯ</span>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="index.html"><span data-kaz="Басты бет" data-rus="Главная">Басты бет</span></a>
+    <a href="codes.html"><span data-kaz="Кодтар" data-rus="Коды">Кодтар</span></a>
+    <a href="protocols.html"><span data-kaz="Укладкалар" data-rus="Укладки">Укладкалар</span></a>
+    <a href="sop.html"><span data-kaz="СОП" data-rus="СОП">СОП</span></a>
+    <a href="sanepid.html"><span data-kaz="Санэпид" data-rus="Санэпид">Санэпид</span></a>
+    <a href="documents.html" class="active"><span data-kaz="Құжаттар" data-rus="Документы">Құжаттар</span></a>
+    <a href="prikazy.html"><span data-kaz="Бұйрықтар" data-rus="Приказы">Бұйрықтар</span></a>
+  </nav>
+</div>
+
+<main class="page">
+
+  <h1 class="page-title" data-kaz="Құжаттар" data-rus="Документы">Құжаттар</h1>
+  <p class="page-subtitle" data-kaz="Нұсқаулықты ашу үшін басыңыз" data-rus="Нажмите для раскрытия">Нұсқаулықты ашу үшін басыңыз</p>
+
+  <!-- ══════════ КАРТОЧКА 1: ІЛЕ ПАРАҒЫ ══════════ -->
+  <div class="proto-card pk-blu" id="ile-paragi">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title" data-kaz="Іле парағы" data-rus="Сопроводительный лист">Іле парағы</div>
+        <div class="proto-subtitle" data-kaz="сырқатнамасына тігіледі" data-rus="подшивается к истории болезни">сырқатнамасына тігіледі</div>
+        <div class="proto-ref">Медициналық құжаттама № 088/у · Приказ и.о. МЗ РК от 30.10.2020 №175</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+
+      <!-- KAZ version -->
+      <div class="lb-kaz">
+        <p class="proto-section-title">Құжат тақырыбы</p>
+        <div class="doc-meta">
+          <div class="doc-meta-row">
+            <div class="doc-meta-label">Ұйым</div>
+            Қазақстан Республикасы Денсаулық сақтау министрлігі
+          </div>
+          <div class="doc-meta-row">
+            <div class="doc-meta-label">Медициналық құжаттама</div>
+            № 088/у
+          </div>
+          <div class="doc-meta-row">
+            <div class="doc-meta-label">Форма</div>
+            КҰЖЖ бойынша үлгі / Код организации по ОКПО
+          </div>
+        </div>
+
+        <p class="proto-section-title mt">Бланктің түс белгілері</p>
+        <div class="color-zones">
+          <div class="color-zone">
+            <div class="cz-dot" style="background:#e53935;"></div>
+            <div>
+              <div class="cz-label">🔴 ҚЫЗЫЛ — Шұғыл</div>
+              <div class="cz-desc">Өмірге қауіп төніп тұр, дереу медициналық көмек қажет</div>
+            </div>
+          </div>
+          <div class="color-zone">
+            <div class="cz-dot" style="background:#f9a825;"></div>
+            <div>
+              <div class="cz-label">🟡 САРЫ — Кезектілікпен</div>
+              <div class="cz-desc">Жағдай тұрақсыз бірақ критикалық емес, күте алады</div>
+            </div>
+          </div>
+          <div class="color-zone">
+            <div class="cz-dot" style="background:#43a047;"></div>
+            <div>
+              <div class="cz-label">🟢 ЖАСЫЛ — Шұғыл емес</div>
+              <div class="cz-desc">Жағдай тұрақты, жоспарлы медициналық көмек</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RUS version -->
+      <div class="lb-rus">
+        <p class="proto-section-title">Шапка документа</p>
+        <div class="doc-meta">
+          <div class="doc-meta-row">
+            <div class="doc-meta-label">Организация</div>
+            Министерство здравоохранения Республики Казахстан
+          </div>
+          <div class="doc-meta-row">
+            <div class="doc-meta-label">Медицинская документация</div>
+            № 088/у
+          </div>
+          <div class="doc-meta-row">
+            <div class="doc-meta-label">Форма</div>
+            Код организации по ОКПО
+          </div>
+        </div>
+
+        <p class="proto-section-title mt">Цветовая маркировка бланка</p>
+        <div class="color-zones">
+          <div class="color-zone">
+            <div class="cz-dot" style="background:#e53935;"></div>
+            <div>
+              <div class="cz-label">🔴 КРАСНЫЙ — Экстренный</div>
+              <div class="cz-desc">Угроза жизни, требует немедленной медицинской помощи</div>
+            </div>
+          </div>
+          <div class="color-zone">
+            <div class="cz-dot" style="background:#f9a825;"></div>
+            <div>
+              <div class="cz-label">🟡 ЖЁЛТЫЙ — Срочный</div>
+              <div class="cz-desc">Состояние нестабильное но не критическое, может подождать</div>
+            </div>
+          </div>
+          <div class="color-zone">
+            <div class="cz-dot" style="background:#43a047;"></div>
+            <div>
+              <div class="cz-label">🟢 ЗЕЛЁНЫЙ — Несрочный</div>
+              <div class="cz-desc">Состояние стабильное, плановая медицинская помощь</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ КАРТОЧКА 2: ТРИАЖ ══════════ -->
+  <div class="proto-card pk-red" id="triage">
+    <div class="proto-header" onclick="toggleProto(this)">
+      <div class="proto-color-bar"></div>
+      <div class="proto-names">
+        <div class="proto-title" data-kaz="Триаж жүйесі" data-rus="Система триаж">Триаж жүйесі</div>
+        <div class="proto-subtitle" data-kaz="Науқастарды ауырлық дәрежесіне қарай сұрыптау" data-rus="Сортировка пациентов по степени тяжести">Науқастарды ауырлық дәрежесіне қарай сұрыптау</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="proto-body">
+
+      <!-- KAZ version -->
+      <div class="lb-kaz">
+        <div class="triage-def">
+          Триаж — науқастарды медициналық көмек кезектілігін анықтау үшін ауырлық дәрежесіне қарай сұрыптау жүйесі.
+        </div>
+
+        <p class="proto-section-title">4 санат</p>
+
+        <div class="triage-list">
+          <div class="triage-item ti-red">
+            <div class="ti-cat">🔴 ҚЫЗЫЛ — Шұғыл</div>
+            <div class="ti-desc">Өмірге қауіп төніп тұр. Дереу көмек қажет.</div>
+            <div class="ti-examples">Мысалдар: жүрек тоқтауы, тыныс алудың тоқтауы, ауыр шок, есін жоғалту</div>
+          </div>
+          <div class="triage-item ti-yel">
+            <div class="ti-cat">🟡 САРЫ — Кезектілікпен</div>
+            <div class="ti-desc">Жағдай тұрақсыз бірақ критикалық емес. 30 минутқа дейін күте алады.</div>
+            <div class="ti-examples">Мысалдар: сынықтар, орташа ауырлықтағы жарақаттар, ауырсыну синдромы</div>
+          </div>
+          <div class="triage-item ti-grn">
+            <div class="ti-cat">🟢 ЖАСЫЛ — Шұғыл емес</div>
+            <div class="ti-desc">Жағдай тұрақты. Жоспарлы көмек.</div>
+            <div class="ti-examples">Мысалдар: жеңіл жарақаттар, суық тию, созылмалы аурулардың асқынуы</div>
+          </div>
+          <div class="triage-item ti-blk">
+            <div class="ti-cat">⬛ ҚАРА</div>
+            <div class="ti-desc">Өлім немесе өмірмен сыйыспайтын жарақаттар. Реанимация мүмкін емес.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RUS version -->
+      <div class="lb-rus">
+        <div class="triage-def">
+          Триаж — система сортировки пациентов по степени тяжести для определения очерёдности оказания медицинской помощи.
+        </div>
+
+        <p class="proto-section-title">4 категории</p>
+
+        <div class="triage-list">
+          <div class="triage-item ti-red">
+            <div class="ti-cat">🔴 КРАСНЫЙ — Экстренный</div>
+            <div class="ti-desc">Угроза жизни. Помощь немедленно.</div>
+            <div class="ti-examples">Примеры: остановка сердца, остановка дыхания, тяжёлый шок, потеря сознания</div>
+          </div>
+          <div class="triage-item ti-yel">
+            <div class="ti-cat">🟡 ЖЁЛТЫЙ — Срочный</div>
+            <div class="ti-desc">Состояние нестабильное но не критическое. Может ждать до 30 минут.</div>
+            <div class="ti-examples">Примеры: переломы, травмы средней тяжести, болевой синдром</div>
+          </div>
+          <div class="triage-item ti-grn">
+            <div class="ti-cat">🟢 ЗЕЛЁНЫЙ — Несрочный</div>
+            <div class="ti-desc">Состояние стабильное. Плановая помощь.</div>
+            <div class="ti-examples">Примеры: лёгкие травмы, ОРВИ, обострение хронических заболеваний</div>
+          </div>
+          <div class="triage-item ti-blk">
+            <div class="ti-cat">⬛ ЧЁРНЫЙ</div>
+            <div class="ti-desc">Смерть или травмы несовместимые с жизнью. Реанимация нецелесообразна.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span data-kaz="Жедел медициналық көмек станциясы" data-rus="Станция скорой медицинской помощи">Жедел медициналық көмек станциясы</span>
+  <br>
+  <span data-kaz="Аккредитация материалдары" data-rus="Материалы аккредитации">Аккредитация материалдары</span>
+</footer>
+
+<script src="lang.js"></script>
+<script>
+  function toggleProto(header) {
+    const card = header.closest('.proto-card');
+    card.classList.toggle('open');
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    initLang();
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      const target = document.getElementById(hash);
+      if (target) {
+        target.classList.add('open');
+        setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

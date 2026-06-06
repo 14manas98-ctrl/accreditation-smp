@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="ru" data-lang="kaz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>СОП — СМП</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .sop-card {
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .sop-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .sop-color-bar {
+      width: 5px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      align-self: stretch;
+      min-height: 50px;
+    }
+
+    .sop-names { flex: 1; }
+
+    .sop-num {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .sop-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.25;
+    }
+
+    .sop-meta {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .sop-body {
+      display: none;
+      border-top: 1px solid rgba(0,0,0,0.07);
+      padding: 20px;
+    }
+
+    .sop-card.open .sop-body { display: block; animation: fadeIn 0.2s ease; }
+    .sop-card.open .card-chevron { transform: rotate(180deg); }
+
+    .sop-responsible {
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 16px;
+      padding: 10px 14px;
+      background: rgba(0,0,0,0.04);
+      border-radius: 8px;
+      line-height: 1.5;
+    }
+
+    .sop-responsible strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .sop-section {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 12px;
+      margin-top: 20px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .sop-section:first-of-type { margin-top: 0; }
+
+    .sop-steps {
+      list-style: none;
+      counter-reset: sop-counter;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sop-steps > li {
+      counter-increment: sop-counter;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text);
+      padding: 10px 0 10px 36px;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      position: relative;
+    }
+
+    .sop-steps > li:last-child { border-bottom: none; }
+
+    .sop-steps > li::before {
+      content: counter(sop-counter);
+      position: absolute;
+      left: 0;
+      top: 11px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.08);
+      font-size: 11px;
+      font-weight: 700;
+      color: #555;
+      line-height: 22px;
+      text-align: center;
+    }
+
+    .sop-steps > li strong {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    .sop-refs {
+      list-style: none;
+      counter-reset: ref-counter;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sop-refs > li {
+      counter-increment: ref-counter;
+      font-size: 12px;
+      color: #666;
+      line-height: 1.55;
+      padding-left: 22px;
+      position: relative;
+    }
+
+    .sop-refs > li::before {
+      content: counter(ref-counter) ")";
+      position: absolute;
+      left: 0;
+      font-weight: 600;
+      color: #aaa;
+    }
+
+    /* colour variants */
+    .sk-blu .sop-header,
+    .sk-blu .sop-body  { background: #e3f2fd; }
+    .sk-blu .sop-color-bar { background: #1e88e5; }
+    .sk-blu .sop-num   { color: #1e88e5; }
+
+    .sk-yel .sop-header,
+    .sk-yel .sop-body  { background: #fffde7; }
+    .sk-yel .sop-color-bar { background: #f9a825; }
+    .sk-yel .sop-num   { color: #f9a825; }
+
+    .sk-org .sop-header,
+    .sk-org .sop-body  { background: #fff3e0; }
+    .sk-org .sop-color-bar { background: #ef6c00; }
+    .sk-org .sop-num   { color: #ef6c00; }
+
+    /* Resource list */
+    .res-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .res-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .res-list li:last-child { border-bottom: none; }
+    .res-name { flex: 1; font-weight: 500; line-height: 1.4; }
+    .res-qty { font-size: 11px; font-weight: 600; white-space: nowrap; flex-shrink: 0; color: var(--muted); }
+
+    /* Definition block */
+    .sop-def {
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.5);
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.07);
+    }
+
+    /* Cause list (4T) */
+    .cause-list { display: flex; flex-direction: column; gap: 7px; }
+
+    .cause-item {
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(0,0,0,0.07);
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text);
+    }
+
+    .cause-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .cause-sub {
+      margin-top: 3px;
+      font-size: 11px;
+      color: var(--muted);
+      padding-left: 4px;
+    }
+
+    /* Symptom checklist */
+    .symptom-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .symptom-list li {
+      font-size: 12px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(0,0,0,0.07);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      line-height: 1.4;
+      color: var(--text);
+    }
+
+    .symptom-list li::before {
+      content: '☐';
+      font-size: 15px;
+      flex-shrink: 0;
+      color: #aaa;
+      line-height: 1;
+    }
+
+    /* Note blocks */
+    .sop-note-red {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-left: 4px solid #e53935;
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.55;
+      background: rgba(229,57,53,0.07);
+    }
+
+    .sop-note-red strong { color: #c62828; }
+
+    .sop-note-yel {
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-left: 4px solid #f9a825;
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.55;
+      background: rgba(249,168,37,0.08);
+    }
+
+    .sop-note-yel strong { color: #e65100; }
+
+    /* New colour variants */
+    .sk-drd .sop-header,
+    .sk-drd .sop-body  { background: #ffebee; }
+    .sk-drd .sop-color-bar { background: #c62828; }
+    .sk-drd .sop-num   { color: #c62828; }
+    .sk-drd .cause-tag { background: rgba(198,40,40,0.12); color: #c62828; }
+
+    .sk-pnk .sop-header,
+    .sk-pnk .sop-body  { background: #fce4ec; }
+    .sk-pnk .sop-color-bar { background: #ad1457; }
+    .sk-pnk .sop-num   { color: #ad1457; }
+    .sk-pnk .cause-tag { background: rgba(173,20,87,0.12); color: #ad1457; }
+
+    .sk-dor .sop-header,
+    .sk-dor .sop-body  { background: #fff3e0; }
+    .sk-dor .sop-color-bar { background: #e65100; }
+    .sk-dor .sop-num   { color: #e65100; }
+
+    .sk-dbl .sop-header,
+    .sk-dbl .sop-body  { background: #e8eaf6; }
+    .sk-dbl .sop-color-bar { background: #1565c0; }
+    .sk-dbl .sop-num   { color: #1565c0; }
+    .sk-dbl .cause-tag { background: rgba(21,101,192,0.12); color: #1565c0; }
+
+    @media (max-width: 600px) {
+      .sop-steps > li { padding-left: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <button class="nav-burger" onclick="toggleSidebar()">☰</button>
+    <a class="logo" href="index.html">
+      <div class="logo-badge">СМП</div>
+      <div class="logo-text">
+        <span class="logo-top">АККРЕДИТАЦИЯ</span>
+        <span class="logo-sub" data-kaz="Жедел медициналық көмек станциясы" data-rus="Станция скорой медицинской помощи">Жедел медициналық көмек станциясы</span>
+      </div>
+    </a>
+    <div class="lang-switch">
+      <button class="lang-btn" data-lang="kaz" onclick="setLang('kaz')">ҚАЗ</button>
+      <button class="lang-btn" data-lang="rus" onclick="setLang('rus')">РУС</button>
+    </div>
+  </div>
+</header>
+
+<div class="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <span class="sidebar-brand">СМП · АККРЕДИТАЦИЯ</span>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="index.html"><span data-kaz="Басты бет" data-rus="Главная">Басты бет</span></a>
+    <a href="codes.html"><span data-kaz="Кодтар" data-rus="Коды">Кодтар</span></a>
+    <a href="protocols.html"><span data-kaz="Укладкалар" data-rus="Укладки">Укладкалар</span></a>
+    <a href="sop.html" class="active"><span data-kaz="СОП" data-rus="СОП">СОП</span></a>
+    <a href="sanepid.html"><span data-kaz="Санэпид" data-rus="Санэпид">Санэпид</span></a>
+    <a href="documents.html"><span data-kaz="Құжаттар" data-rus="Документы">Құжаттар</span></a>
+    <a href="prikazy.html"><span data-kaz="Бұйрықтар" data-rus="Приказы">Бұйрықтар</span></a>
+  </nav>
+</div>
+
+<main class="page">
+
+  <h1 class="page-title">СОП</h1>
+  <p class="page-subtitle" data-kaz="Стандартты операциялық процедуралар · Ашу үшін басыңыз" data-rus="Стандартные операционные процедуры · Нажмите для раскрытия">Стандартты операциялық процедуралар · Ашу үшін басыңыз</p>
+
+  <!-- ══════════ СОП 1 ══════════ -->
+  <div class="sop-card sk-blu" id="sop-temperature">
+    <div class="sop-header" onclick="toggleSop(this)">
+      <div class="sop-color-bar"></div>
+      <div class="sop-names">
+        <div class="sop-num">СОП 1</div>
+        <div class="sop-title" data-kaz="Температура режимі мен ылғалдылықты бақылау" data-rus="Контроль температурного режима и влажности">Температура режимі мен ылғалдылықты бақылау</div>
+        <div class="sop-meta">Утверждён: 15.01.2026 г. · Ахметжанов К.К.</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="sop-body">
+      <div class="sop-responsible">
+        <strong data-kaz="Жауаптылар:" data-rus="Ответственные:">Жауаптылар:</strong>
+        <span class="lb-kaz"> Провизор, фармацевт, аудандар бойынша аға фельдшер</span>
+        <span class="lb-rus"> Провизор, фармацевт, старший фельдшер по районам</span>
+      </div>
+
+      <p class="sop-section" data-kaz="Іс-қимыл тәртібі" data-rus="Порядок действий">Іс-қимыл тәртібі</p>
+
+      <ol class="sop-steps lb-kaz">
+        <li>ДС сақтау бөлмесіндегі ылғалдылық пен температураны күнделікті бақылап, журналда тіркеу (1-Қосымша нысаны). Температура +15...+25°С, ылғалдылық 50–65%.</li>
+        <li>Гигрометр істен шыққан жағдайда — орталық стансаның аға фельдшеріне хабарлап, жаңасына ауыстыру.</li>
+        <li>Суытқыштардағы температураны 8:00 (ауысым басы) және 17:00 (ауысым соңы) бақылап, «Суытқыштағы температура режимі» журналына/картасына тіркеу.</li>
+        <li>Суытқыштардағы температура +2°С-тан төмен болса — реттеңіз, 1 сағаттан кейін тексеріңіз. Температура +2°С-қа дейін көтерілмесе, суытқышты 10 минутқа өшіріңіз. Бас инженерге хабарлаңыз.</li>
+        <li>Суытқыштардағы температура +8°С-тан жоғары болса — реттеңіз, 1 сағаттан кейін тексеріңіз. Температура төмендемесе, ДС-ні №3 резервтік суытқышқа немесе салқындатқыш элементтері бар термоконтейнерге ауыстырыңыз. Салқындатқыш элементтерді №1 суытқыштың мұздатқыш камерасынан алыңыз. Бас инженерге хабарлаңыз.</li>
+      </ol>
+
+      <ol class="sop-steps lb-rus">
+        <li>Ежедневно контролировать влажность и температуру в помещении хранения ЛС, фиксировать в журнале (форма Приложения 1). Температура +15...+25°С, влажность 50–65%.</li>
+        <li>При серьёзных отклонениях, если гигрометр вышел из строя — сообщить старшему фельдшеру центральной станции, произвести замену на новую.</li>
+        <li>Контролировать температуру в холодильниках в 8:00 ч. (начало смены) и в 17:00 ч. (конец смены), фиксировать в журнале/карте «Температурный режим в холодильнике».</li>
+        <li>Если в холодильниках температура ниже +2°С — отрегулируйте, через 1 час проверьте. Если температура не поднялась до +2°С, отключите холодильник на 10 минут. Оповестите главного инженера.</li>
+        <li>Если в холодильниках температура выше +8°С — отрегулируйте и проверьте через 1 час. Если температура не снизилась, переместите ЛС в резервный холодильник №3 или в термоконтейнер с хладоэлементами. Хладоэлементы возьмите из морозильной камеры холодильника №1. Оповестите главного инженера.</li>
+      </ol>
+
+      <p class="sop-section" data-kaz="Нормативтік база" data-rus="Нормативная база">Нормативтік база</p>
+
+      <ol class="sop-refs lb-kaz">
+        <li>ҚР ДСМ 16.02.2021 ж. № ҚР ДСМ-19 бұйрығы «Дәрілік заттар мен медициналық бұйымдарды сақтау және тасымалдау қағидаларын бекіту туралы»</li>
+        <li>ҚР Денсаулық сақтау министрлігінің 26.01.2015 ж. №32 бұйрығы «Қазақстан Республикасында бақылауға жататын есірткі заттарды, психотроптық заттар мен олардың прекурсорларын медициналық мақсатта пайдалану қағидаларын бекіту туралы» (12.07.2019 ж. өзгерістерімен)</li>
+      </ol>
+
+      <ol class="sop-refs lb-rus">
+        <li>Приказ МЗ РК от 16.02.2021 № ҚР ДСМ-19 «Об утверждении Правил хранения и транспортировки лекарственных средств и медицинских изделий»</li>
+        <li>Приказ Министерства здравоохранения РК от 26.01.2015 г. №32 «Об утверждении Правил использования в медицинских целях наркотических средств, психотропных веществ и их прекурсоров, подлежащих контролю в Республике Казахстан» (с изменениями на 12.07.2019 г.)</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ══════════ СОП 2 ══════════ -->
+  <div class="sop-card sk-yel" id="sop-fridge">
+    <div class="sop-header" onclick="toggleSop(this)">
+      <div class="sop-color-bar"></div>
+      <div class="sop-names">
+        <div class="sop-num">СОП 2</div>
+        <div class="sop-title" data-kaz="Тоңазытқыш жабдықтарының ақаулығы немесе электр қуатының өшуі кезіндегі шұғыл іс-шаралар жоспары" data-rus="План экстренных мероприятий при неисправности холодильного оборудования или отключения электроэнергии">Тоңазытқыш жабдықтарының ақаулығы немесе электр қуатының өшуі кезіндегі шұғыл іс-шаралар жоспары</div>
+        <div class="sop-meta">Утверждён: 12.01.2026 г. · Ахметжанов К.К.</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="sop-body">
+      <div class="sop-responsible">
+        <strong data-kaz="Жауаптылар:" data-rus="Ответственные:">Жауаптылар:</strong>
+        <span class="lb-kaz"> Фармацевт, №1–5 қосалқы стансалардың аға фельдшері, сөмкелерді жабдықтаушы фельдшер</span>
+        <span class="lb-rus"> Фармацевт, старший фельдшер подстанций №1–5, фельдшер по заправке сумок</span>
+      </div>
+
+      <p class="sop-section" data-kaz="Іс-қимыл тәртібі" data-rus="Порядок действий">Іс-қимыл тәртібі</p>
+
+      <ol class="sop-steps lb-kaz">
+        <li>Суытқыш жабдықтарының жұмысы тоқтаған кезде — өшу себебін анықтап, бас инженерге хабарлаңыз.</li>
+        <li>Жабдық немесе электр желісінің ақаулығы анықталса — жөндеу үшін маманды шұғыл шақырыңыз (жауапты: шаруашылық меңгерушісі).</li>
+        <li>Қысқа мерзімді (2 сағатқа дейін) тоқтау кезінде: суытқыштың төменгі сөресіне мұздатылған салқындатқыш элементтерді орналастырыңыз, ақаулық жойылғанша ашпаңыз.</li>
+        <li>2 сағаттан астам тоқтау кезінде: суытқыштан ДС-ні салқындатқыш элемент пен термометрі бар термоконтейнерге орналастырыңыз, ДС-нің салқындатқыш элементтермен тікелей байланысын болдырмаңыз (қағазбен/картонмен бөліңіз), резервтік суытқышқа тасымалдауды қамтамасыз етіңіз.</li>
+        <li>Жабдықты жөндеу немесе ауыстыру қажет болса — әкімшілікке хабарлаңыз (жауапты: провизор).</li>
+        <li>Суытқышты еріту уақытында — ДС салқындатқыш элементтері бар термоконтейнерге орналастырылады.</li>
+      </ol>
+
+      <ol class="sop-steps lb-rus">
+        <li>При прекращении работы холодильного оборудования — выяснить причину отключения и проинформировать главного инженера.</li>
+        <li>При обнаружении неисправности оборудования или электросети — срочно вызвать специалиста для ремонта (ответственный: завхоз).</li>
+        <li>При кратковременном (до 2 часов) прекращении работы: поместить на нижнюю полку холодильника замороженные хладоэлементы, не открывать до устранения неисправности.</li>
+        <li>При прекращении работы более 2 часов: ЛС из холодильника поместить в термоконтейнеры с хладоэлементом и термометром, исключить прямой контакт ЛС с хладоэлементами (проложить бумагой / картоном), обеспечить транспортировку в запасной холодильник.</li>
+        <li>При необходимости ремонта или замены оборудования — информировать администрацию (ответственный: провизор).</li>
+        <li>На время размораживания холодильника — ЛС помещаются в термоконтейнер с хладоэлементами.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ══════════ СОП 3 ══════════ -->
+  <div class="sop-card sk-org" id="sop-ac">
+    <div class="sop-header" onclick="toggleSop(this)">
+      <div class="sop-color-bar"></div>
+      <div class="sop-names">
+        <div class="sop-num">СОП 3</div>
+        <div class="sop-title" data-kaz="Кондиционер ақаулығы немесе электр қуатының өшуі кезіндегі шұғыл іс-шаралар жоспары" data-rus="План экстренных мероприятий при неисправности кондиционера или отключения электроэнергии">Кондиционер ақаулығы немесе электр қуатының өшуі кезіндегі шұғыл іс-шаралар жоспары</div>
+        <div class="sop-meta">Утверждён: 12.01.2026 г. · Ахметжанов К.К.</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="sop-body">
+      <div class="sop-responsible">
+        <strong data-kaz="Жауаптылар:" data-rus="Ответственные:">Жауаптылар:</strong>
+        <span class="lb-kaz"> Фармацевт, №1–5 қосалқы стансалардың аға фельдшері, сөмкелерді жабдықтаушы фельдшер</span>
+        <span class="lb-rus"> Фармацевт, старший фельдшер подстанций №1–5, фельдшер по заправке сумок</span>
+      </div>
+
+      <p class="sop-section" data-kaz="Іс-қимыл тәртібі" data-rus="Порядок действий">Іс-қимыл тәртібі</p>
+
+      <ol class="sop-steps lb-kaz">
+        <li>
+          <strong>Бірінші кезектегі шаралар — жағдайды тіркеу және хабарлау:</strong>
+          <ul class="sub-steps">
+            <li>Термометрлер мен гигрометрлердің ағымдағы көрсеткіштерін алу</li>
+            <li>Жабдықтың тоқтаған нақты уақытын және ағымдағы температураны тіркеу</li>
+            <li>Ауа параметрлерін тіркеу журналына жазба жасау</li>
+            <li>Ақаулық жойылғанша әр 2–3 сағат сайын температураны визуалды бақылау жүргізу</li>
+            <li>Бас инженер мен медициналық бөлімше жөніндегі орынбасарға дереу хабарлау</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Дәрілік заттарды қорғау:</strong>
+          <ul class="sub-steps">
+            <li>Препараттарды бағалап, нұсқаулықтармен салыстырыңыз (рұқсат етілген диапазон: +15°С-тан +25°С-қа дейін, ылғалдылық 65%-ға дейін)</li>
+            <li>Температура нормадан асса — осы дәрілерді беруді және жылжытуды тоқтатыңыз</li>
+            <li>Температура сын деңгейіне жетсе — салқындатқыш элементтері бар термоконтейнерлерде немесе жұмыс істейтін кондиционер жүйесі бар бөлмелерге шұғыл тасымалдауды ұйымдастырыңыз</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Бөлмені оқшаулау:</strong>
+          <ul class="sub-steps">
+            <li>Есіктер мен терезелерді мықтап жабыңыз</li>
+            <li>Жөндеу үшін маман шақыру мәселесі бойынша бас инженермен байланыста болыңыз</li>
+          </ul>
+        </li>
+        <li>Қалпына келтіруден кейін тәуекелді бағалау: ДС-нің сыртқы түрінің өзгеруін тексеріңіз (лайлану, қабатталу, тұнба). Сақтау шарттары өрескел бұзылған препараттар комиссиямен есептен шығарылуға және жойылуға жатады.</li>
+      </ol>
+
+      <ol class="sop-steps lb-rus">
+        <li>
+          <strong>Первоочередные меры — зафиксировать ситуацию и оповестить:</strong>
+          <ul class="sub-steps">
+            <li>Снять текущие показатели с термометров и гигрометров</li>
+            <li>Зафиксировать точное время остановки оборудования и текущую температуру</li>
+            <li>Сделать запись в журнале регистрации параметров воздуха</li>
+            <li>Каждые 2–3 часа проводить визуальный контроль температуры до устранения неполадок</li>
+            <li>Немедленно поставить в известность главного инженера и заместителя по медицинской части</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Защита лекарственных средств:</strong>
+          <ul class="sub-steps">
+            <li>Оценить препараты и сверить с инструкциями (допустимый коридор +15°С до +25°С, влажность до 65%)</li>
+            <li>Если температура превышает нормы — прекратить отпуск и перемещение этих лекарств</li>
+            <li>При критическом росте температуры — организовать экстренную транспортировку в термоконтейнерах с хладоэлементами или в помещения с работающей системой кондиционирования</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Локализация помещения:</strong>
+          <ul class="sub-steps">
+            <li>Плотно закрыть двери и окна</li>
+            <li>Держать связь с главным инженером по вызову специалистов для ремонта</li>
+          </ul>
+        </li>
+        <li>Оценка рисков после восстановления: проверить ЛС на изменение внешнего вида (помутнение, расслоение, осадок). Препараты с грубо нарушенными условиями хранения подлежат списанию и уничтожению комиссией.</li>
+      </ol>
+    </div>
+  </div>
+
+
+  <!-- ══════════ СОП 4 ══════════ -->
+  <div class="sop-card sk-drd" id="sop-bleeding-late">
+    <div class="sop-header" onclick="toggleSop(this)">
+      <div class="sop-color-bar"></div>
+      <div class="sop-names">
+        <div class="sop-num">СОП 4</div>
+        <div class="sop-title" data-kaz="Жүктіліктің кеш мерзімдеріндегі қан кету" data-rus="Кровотечения в поздние сроки беременности">Жүктіліктің кеш мерзімдеріндегі қан кету</div>
+        <div class="sop-meta">Приказ МЗ РК от 26.08.2021 № ҚР ДСМ-92</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="sop-body">
+
+      <p class="sop-section" data-kaz="Ресурстар (үкладка)" data-rus="Ресурсы (укладка)">Ресурстар (үкладка)</p>
+
+      <ul class="res-list lb-kaz">
+        <li><span class="res-name">Натрий хлориді 0,9% ерітіндісі 500 мл</span><span class="res-qty">4 флакон</span></li>
+        <li><span class="res-name">Окситоцин</span><span class="res-qty">1 қаптама</span></li>
+        <li><span class="res-name">Мизопростол</span><span class="res-qty">2 қаптама</span></li>
+        <li><span class="res-name">5,0 шприц</span><span class="res-qty">4 дана</span></li>
+        <li><span class="res-name">Қан жүйелері</span><span class="res-qty">2 дана</span></li>
+        <li><span class="res-name">Инфузия жүйелері</span><span class="res-qty">3 дана</span></li>
+        <li><span class="res-name">Вазофикс №14-16</span><span class="res-qty">2 данадан</span></li>
+        <li><span class="res-name">Стерильді қолғап №7-8</span><span class="res-qty">6 жұп</span></li>
+        <li><span class="res-name">Тегадерм немесе лейкопластырь</span><span class="res-qty">—</span></li>
+        <li><span class="res-name">Жгут</span><span class="res-qty">—</span></li>
+        <li><span class="res-name">Спирт 70%</span><span class="res-qty">1 флакон</span></li>
+        <li><span class="res-name">Бір рет қолданылатын спирттік майлықтар</span><span class="res-qty">5-6 дана</span></li>
+        <li><span class="res-name">Фолей катетері №20-22</span><span class="res-qty">1 дана</span></li>
+        <li><span class="res-name">Шырышты сорып алуға арналған груша</span><span class="res-qty">—</span></li>
+        <li><span class="res-name">Стерильді шпатель</span><span class="res-qty">—</span></li>
+        <li><span class="res-name">Амбу қабы, Оттегі</span><span class="res-qty">—</span></li>
+        <li><span class="res-name">Стерильді воздуховод (резеңке)</span><span class="res-qty">—</span></li>
+        <li><span class="res-name">Фонендоскоп, Тонометр</span><span class="res-qty">—</span></li>
+        <li><span class="res-name">Зәр жинауға арналған қап</span><span class="res-qty">1 дана</span></li>
+        <li><span class="res-name">Туу жолдарын қарауға және жыртықтарды тігуге арналған аспаптар жиыны</span><span class="res-qty">—</span></li>
+        <li><span class="res-name">Тігіс материалы (викрил, тикрил)</span><span class="res-qty">2-3 дана</span></li>
+      </ul>
+
+      <ul class="res-list lb-rus">
+        <li><span class="res-name">Раствор натрия хлорида 0,9% 500 мл</span><span class="res-qty">4 флакона</span></li>
+        <li><span class="res-name">Окситоцин</span><span class="res-qty">1 уп.</span></li>
+        <li><span class="res-name">Мизопростол</span><span class="res-qty">2 уп.</span></li>
+        <li><span class="res-name">Шприцы 5,0</span><span class="res-qty">4 шт.</span></li>
+        <li><span class="res-name">Системы для крови</span><span class="res-qty">2 шт.</span></li>
+        <li><span class="res-name">Системы для инфузии</span><span class="res-qty">3 шт.</span></li>
+        <li><span class="res-name">Вазофиксы №14-16</span><span class="res-qty">по 2 шт.</span></li>
+        <li><span class="res-name">Стерильные перчатки №7-8</span><span class="res-qty">6 пар</span></li>
+        <li><span class="res-name">Тегадерм или лейкопластырь</span><span class="res-qty">—</span></li>
+        <li><span class="res-name">Жгут</span><span class="res-qty">—</span></li>
+        <li><span class="res-name">Спирт 70%</span><span class="res-qty">1 флакон</span></li>
+        <li><span class="res-name">Одноразовые спиртовые салфетки</span><span class="res-qty">5-6 шт.</span></li>
+        <li><span class="res-name">Катетер Фолея №20-22</span><span class="res-qty">1 шт.</span></li>
+        <li><span class="res-name">Груша для отсасывания слизи</span><span class="res-qty">—</span></li>
+        <li><span class="res-name">Стерильный шпатель</span><span class="res-qty">—</span></li>
+        <li><span class="res-name">Мешок Амбу, Кислород</span><span class="res-qty">—</span></li>
+        <li><span class="res-name">Стерильный воздуховод резиновый</span><span class="res-qty">—</span></li>
+        <li><span class="res-name">Фонендоскоп, Тонометр</span><span class="res-qty">—</span></li>
+        <li><span class="res-name">Мешок для сбора мочи</span><span class="res-qty">1 шт.</span></li>
+        <li><span class="res-name">Набор инструментов для осмотра родовых путей и ушивания разрывов</span><span class="res-qty">—</span></li>
+        <li><span class="res-name">Шовный материал (викрил, тикрил)</span><span class="res-qty">2-3 шт.</span></li>
+      </ul>
+
+      <p class="sop-section" data-kaz="Іс-қимыл алгоритмі" data-rus="Алгоритм действий">Іс-қимыл алгоритмі</p>
+
+      <ol class="sop-steps lb-kaz">
+        <li>Науқасты кушеткаға жатқызу (4 жақтан қол жеткізу)</li>
+        <li>Қан жоғалту дәрежесін бағалау: төсемдегі қан мөлшері, киімдегі қан</li>
+        <li>Кезекші дәрігерді, бос медперсоналды және лаборантты шақыру</li>
+        <li>Науқасты сәйкестендіру (жеке куәлік, ЖСН, РПН)</li>
+        <li>Перифериялық венаны катетерлеу (катетер №14, 16)</li>
+        <li>Натрий хлориді 0,9% изотоникалық ерітіндісін енгізу — акушерлік анамнезді бағалаумен бір мезгілде: жүктіліктің мерзімі, туу паритеті, жатырдағы операциялар, плацентаның алдыңғы орналасуы, преэклампсия</li>
+        <li>Мониторинг: ЖЖЖ, АҚ, пульс, іштегі ауырсыну сипаты, жатыр пішімі, ұрық жағдайы</li>
+        <li>Болжамды диагноз қою</li>
+        <li>Бас дәрігер орынбасарына хабарлау, жедел жәрдем шақыру, стационарды хабардар ету</li>
+        <li>Шок белгілері болса: 2 венаны катетерлеу, 15 минутта 1 л инфузия, АҚ &gt;100 ұстау, ылғалданған оттегі</li>
+        <li>Ең жақын стационарға «венада ине» бар күйде горизонталь жатқызып, жолдамамен және алмасу-хабарлама картасымен жеткізу (№113/у нысаны)</li>
+        <li>Кушетканы дезинфекциялау. Қалдықтарды «Б» класты ыдысқа утилизациялау</li>
+      </ol>
+
+      <ol class="sop-steps lb-rus">
+        <li>Уложить пациентку на кушетку (доступ с 4-х сторон)</li>
+        <li>Оценить степень кровопотери: количество крови на прокладке, кровь на одежде</li>
+        <li>Пригласить дежурного врача, свободный медперсонал и лаборанта</li>
+        <li>Идентифицировать пациента (удостоверение, ИИН, РПН)</li>
+        <li>Катетеризация периферической вены (катетер №14, 16)</li>
+        <li>Инфузия изотонического раствора натрия 0,9% с одновременной оценкой: срок беременности, паритет родов, операции на матке, предлежание плаценты, преэклампсия</li>
+        <li>Мониторинг: ЧСС, АД, пульс, характер болей, форма матки, состояние плода</li>
+        <li>Установить предполагаемый диагноз</li>
+        <li>Уведомить зам. главного врача, вызвать скорую, информировать стационар</li>
+        <li>При признаках шока: катетеризация 2 вен, инфузия 1 л за 15 минут, поддерживать АД &gt;100, увлажнённый кислород</li>
+        <li>Госпитализировать в ближайший стационар горизонтально с «иглой в вене», с направлением и обменно-уведомительной картой (форма №113/у)</li>
+        <li>Дезинфекция кушетки. Утилизация материала в ёмкость класса «Б»</li>
+      </ol>
+
+    </div>
+  </div>
+
+  <!-- ══════════ СОП 5 ══════════ -->
+  <div class="sop-card sk-pnk" id="sop-postpartum-bleeding">
+    <div class="sop-header" onclick="toggleSop(this)">
+      <div class="sop-color-bar"></div>
+      <div class="sop-names">
+        <div class="sop-num">СОП 5</div>
+        <div class="sop-title" data-kaz="Босанғаннан кейінгі қан кету" data-rus="Послеродовое кровотечение">Босанғаннан кейінгі қан кету</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="sop-body">
+
+      <div class="sop-def lb-kaz">
+        <strong>Босанғаннан кейінгі қан кету</strong> — табиғи туу жолдары арқылы босанғанда <strong>500 мл және одан да көп</strong>, кесарев тілігі кезінде <strong>1000 мл және одан да көп</strong> қан жоғалту.<br>
+        <span style="font-size:11px;color:var(--muted);margin-top:4px;display:block;">Ерте — алғашқы 24 сағатта &nbsp;·&nbsp; Кеш — 24 сағаттан кейін</span>
+      </div>
+
+      <div class="sop-def lb-rus">
+        <strong>Послеродовое кровотечение</strong> — кровопотеря <strong>500 мл и более</strong> при родах через естественные пути, <strong>1000 мл и более</strong> при кесаревом сечении.<br>
+        <span style="font-size:11px;color:var(--muted);margin-top:4px;display:block;">Раннее — в первые 24 часа &nbsp;·&nbsp; Позднее — после 24 часов</span>
+      </div>
+
+      <p class="sop-section" data-kaz="«4Т» себептері" data-rus="Причины «4Т»">«4Т» себептері</p>
+
+      <div class="cause-list lb-kaz">
+        <div class="cause-item">
+          <span class="cause-tag">ТОНУС</span>Жатыр атониясы
+          <div class="cause-sub">көп суылық, көп ұрықтылық, ірі ұрық, ұзақ босану</div>
+        </div>
+        <div class="cause-item">
+          <span class="cause-tag">ТІН</span>Соңдық бөліктерінің кідіруі, плацентаның жабысуы
+        </div>
+        <div class="cause-item">
+          <span class="cause-tag">ТРАВМА</span>Жатыр мойнының, қынаптың, шаттың жыртылуы, жатырдың жыртылуы
+        </div>
+        <div class="cause-item">
+          <span class="cause-tag">ТРОМБИН</span>Коагуляция бұзылыстары, ДВС-синдром, преэклампсия
+        </div>
+      </div>
+
+      <div class="cause-list lb-rus">
+        <div class="cause-item">
+          <span class="cause-tag">ТОНУС</span>Атония матки
+          <div class="cause-sub">многоводие, многоплодие, крупный плод, затяжные роды</div>
+        </div>
+        <div class="cause-item">
+          <span class="cause-tag">ТКАНЬ</span>Задержка частей последа, приращение плаценты
+        </div>
+        <div class="cause-item">
+          <span class="cause-tag">ТРАВМА</span>Разрывы шейки матки, влагалища, промежности, разрыв матки
+        </div>
+        <div class="cause-item">
+          <span class="cause-tag">ТРОМБИН</span>Нарушения коагуляции, ДВС-синдром, преэклампсия
+        </div>
+      </div>
+
+      <p class="sop-section" data-kaz="Іс-қимыл алгоритмі" data-rus="Алгоритм действий">Іс-қимыл алгоритмі</p>
+
+      <ol class="sop-steps lb-kaz">
+        <li>Персоналды жұмылдыру: акушер-гинеколог, анестезиолог-реаниматолог, лаборант</li>
+        <li>Қан жоғалту көлемін бағалау (көзбен, өлшеу ыдысымен, өлшеу арқылы)</li>
+        <li>Өмірлік маңызды функцияларды бақылау: АҚ, пульс, температура, ТЖЖ</li>
+        <li>Қарқынды терапия картасын жүргізу үшін қызметкер бөлу</li>
+        <li>Несеп қуығын катетерлеу (бос болуы керек)</li>
+        <li>2 перифериялық венаны №14-16G катетерлеу, кристаллоидтарды қан жоғалтуға 3:1 қатынасында енгізу + утеротоники</li>
+        <li>Әйелді жылыту (көрпе, дымқыл кілемдерді ауыстыру)</li>
+        <li>Ылғалданған оттегі беру</li>
+        <li>Қан анализдері: ЖҚА, коагулограмма, қан тобы, Rh-факторы</li>
+        <li>«4Т» бойынша себебін анықтау: жатырды зерттеу (Тонус, Тін), туу жолдарын қарау (Травма), коагулопатия (Тромбин)</li>
+        <li>Кристаллоидтарды 15 минутта 1 л жылдамдықпен енгізуді жалғастыру</li>
+        <li>Операциялық залды ашу</li>
+        <li>Тасымалдау кезінде — кіндіктен төмен солжақта қолмен іш аортасын қысу</li>
+      </ol>
+
+      <ol class="sop-steps lb-rus">
+        <li>Мобилизация персонала: акушер-гинеколог, анестезиолог-реаниматолог, лаборант</li>
+        <li>Оценка объёма кровопотери (визуально, мерной кружкой, взвешивание)</li>
+        <li>Контроль жизненно важных функций: АД, пульс, температура, ЧДД</li>
+        <li>Выделить сотрудника для ведения карты интенсивной терапии</li>
+        <li>Катетеризация мочевого пузыря (должен быть пуст)</li>
+        <li>Катетеризация 2 периферических вен №14-16G, инфузия кристаллоидов 3:1 к объёму кровопотери + утеротоники</li>
+        <li>Согревание женщины (одеяло, сменить влажные простыни)</li>
+        <li>Увлажнённый кислород</li>
+        <li>Анализ крови: ОАК, коагулограмма, группа крови, Rh-фактор</li>
+        <li>Установить причину по «4Т»: исследовать матку (Тонус, Ткань), осмотр родовых путей (Травма), коагулопатия (Тромбин)</li>
+        <li>Продолжить инфузию кристаллоидов 1 л за 15 минут</li>
+        <li>Развернуть операционную</li>
+        <li>При транспортировке — сдавление брюшной аорты кулаком слева ниже пупка</li>
+      </ol>
+
+      <p class="sop-section" data-kaz="Утеротоники" data-rus="Утеротоники">Утеротоники</p>
+
+      <ul class="res-list lb-kaz">
+        <li><span class="res-name">Окситоцин</span><span class="res-qty">10 БЕ бұлшықетке немесе 5 БЕ венаға баяу</span></li>
+        <li><span class="res-name">Эргометрин</span><span class="res-qty">0,2 мг бұлшықетке немесе венаға баяу</span></li>
+        <li><span class="res-name">Мизопростол</span><span class="res-qty">800-1000 мкг тік ішекке немесе 600-800 мкг ауыз арқылы</span></li>
+      </ul>
+
+      <ul class="res-list lb-rus">
+        <li><span class="res-name">Окситоцин</span><span class="res-qty">10 ЕД в/м или 5 ЕД в/в медленно</span></li>
+        <li><span class="res-name">Эргометрин</span><span class="res-qty">0,2 мг в/м или в/в медленно</span></li>
+        <li><span class="res-name">Мизопростол</span><span class="res-qty">800-1000 мкг ректально или 600-800 мкг перорально</span></li>
+      </ul>
+
+    </div>
+  </div>
+
+  <!-- ══════════ СОП 6 ══════════ -->
+  <div class="sop-card sk-dor" id="sop-bleeding-early">
+    <div class="sop-header" onclick="toggleSop(this)">
+      <div class="sop-color-bar"></div>
+      <div class="sop-names">
+        <div class="sop-num">СОП 6</div>
+        <div class="sop-title" data-kaz="Жүктіліктің ерте мерзімдеріндегі қан кету" data-rus="Кровотечения в ранние сроки беременности">Жүктіліктің ерте мерзімдеріндегі қан кету</div>
+        <div class="sop-meta">Приказ МЗ РК от 26.08.2021 № ҚР ДСМ-92</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="sop-body">
+
+      <p class="sop-section" data-kaz="Іс-қимыл алгоритмі" data-rus="Алгоритм действий">Іс-қимыл алгоритмі</p>
+
+      <ol class="sop-steps lb-kaz">
+        <li>Науқасты жатқызу, жалпы жағдайды бағалау</li>
+        <li>АҚ, пульс, ТЖЖ, температураны өлшеу</li>
+        <li>Акушерлік анамнез жинау: етеккір кідіруі мерзімі, тест бойынша жүктілік, ауырсыну сипаты, қан бөлінуі мөлшері</li>
+        <li>Науқасты сәйкестендіру</li>
+        <li>Перифериялық венаны катетерлеу</li>
+        <li>Натрий хлориді 0,9% изотоникалық ерітіндісін енгізу</li>
+        <li>Дәрігерді, лаборантты шақыру</li>
+        <li>Эктопиялық жүктілік немесе түсік қаупі белгілері болса — жедел жәрдем шақыру</li>
+        <li>Гинекология бөліміне жатқызу</li>
+        <li>Науқас картасына жазу</li>
+      </ol>
+
+      <ol class="sop-steps lb-rus">
+        <li>Уложить пациентку, оценить общее состояние</li>
+        <li>Измерить АД, пульс, ЧДД, температуру</li>
+        <li>Сбор акушерского анамнеза: срок задержки менструации, наличие беременности по тесту, характер болей, количество кровянистых выделений</li>
+        <li>Идентифицировать пациента</li>
+        <li>Катетеризация периферической вены</li>
+        <li>Инфузия изотонического раствора натрия 0,9%</li>
+        <li>Пригласить врача, лаборанта</li>
+        <li>При признаках внематочной беременности или угрозы выкидыша — вызвать скорую</li>
+        <li>Госпитализировать в гинекологическое отделение</li>
+        <li>Документировать в карте пациента</li>
+      </ol>
+
+    </div>
+  </div>
+
+  <!-- ══════════ СОП 7 ══════════ -->
+  <div class="sop-card sk-dbl" id="sop-eclampsia">
+    <div class="sop-header" onclick="toggleSop(this)">
+      <div class="sop-color-bar"></div>
+      <div class="sop-names">
+        <div class="sop-num">СОП 7</div>
+        <div class="sop-title" data-kaz="Ауыр преэклампсия және эклампсияда шұғыл көмек" data-rus="Неотложная помощь при тяжёлой преэклампсии и эклампсии">Ауыр преэклампсия және эклампсияда шұғыл көмек</div>
+        <div class="sop-meta">Приказ МЗ РК от 26.08.2021 № ҚР ДСМ-92 · Клин. протокол №36 от 27.12.2017</div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="sop-body">
+
+      <p class="sop-section" data-kaz="Ауыр преэклампсия белгілері (тексеру)" data-rus="Симптомы тяжёлой преэклампсии (проверить)">Ауыр преэклампсия белгілері (тексеру)</p>
+
+      <ul class="symptom-list lb-kaz">
+        <li>АҚ ≥160/110 мм сын. бағ.</li>
+        <li>Бас ауруы</li>
+        <li>Көру бұзылысы</li>
+        <li>Эпигастрий аймағындағы ауырсыну</li>
+        <li>Бұлшықет тырысуы немесе дірілі</li>
+        <li>Олигурия</li>
+      </ul>
+
+      <ul class="symptom-list lb-rus">
+        <li>АД ≥160/110 мм рт.ст.</li>
+        <li>Головная боль</li>
+        <li>Нарушение зрения</li>
+        <li>Боль в эпигастральной области</li>
+        <li>Подёргивание мышц или тремор</li>
+        <li>Олигурия</li>
+      </ul>
+
+      <p class="sop-section" data-kaz="Эклампсия кезіндегі алгоритм" data-rus="Алгоритм при эклампсии">Эклампсия кезіндегі алгоритм</p>
+
+      <ol class="sop-steps lb-kaz">
+        <li>Әйелді зақымданудан қорғау, белсенді ұстамау. Сол жақ бүйіріне жатқызу</li>
+        <li>Анестезиолог, акушер-гинеколог, акушерка, лаборант шақыру</li>
+        <li>Ауыз қуысының мазмұнын сору. Оттегі 8-10 л/мин</li>
+        <li>Перифериялық венаны №14-16G катетерлеу</li>
+        <li><strong>Бастапқы доза:</strong> магний сульфаты 25% — 20 мл венаға 10-20 минут ішінде</li>
+        <li><strong>Қолдаушы доза:</strong> 320 мл физ. ерітіндіге 80 мл 25% магний сульфаты, венаға 11 тамшы/мин (1 г/сағ), АҚ және ЖЖЖ бақылауымен</li>
+        <li><strong>Эклампсия қайталанса:</strong> жүктемелік доза — 8 мл 25% ерітінді венаға баяу 3-5 минут</li>
+        <li>АҚ ≥160/110 болса — нифедипин 10 мг 20 минут сайын</li>
+        <li>Несеп қуығын катетерлеу</li>
+        <li>ОАРИТ-ке тасымалдау</li>
+        <li>Эклампсиялық статус кезінде — ИВЛ-ге ауыстыру</li>
+        <li>2-3 сағат ішінде тұрақтанса — босандыру мәселесін қарастыру</li>
+      </ol>
+
+      <ol class="sop-steps lb-rus">
+        <li>Защитить женщину от повреждений, не удерживать активно. Уложить на левый бок</li>
+        <li>Вызвать анестезиолога, акушер-гинеколога, акушерку, лаборанта</li>
+        <li>Аспирировать содержимое полости рта. Кислород 8-10 л/мин</li>
+        <li>Катетеризация периферической вены №14-16G</li>
+        <li><strong>Стартовая доза:</strong> магния сульфат 25% — 20 мл в/в в течение 10-20 минут</li>
+        <li><strong>Поддерживающая доза:</strong> 80 мл 25% р-ра сульфата магния в 320 мл физ. р-ра, вводить в/в 11 кап/мин (1 г/час), контроль АД и ЧСС</li>
+        <li><strong>При повторном приступе:</strong> нагрузочная доза — 8 мл 25% р-ра в/в медленно 3-5 минут</li>
+        <li>При АД ≥160/110 — нифедипин 10 мг каждые 20 минут</li>
+        <li>Катетеризация мочевого пузыря</li>
+        <li>Транспортировка в ОАРИТ</li>
+        <li>При эклампсическом статусе — перевод на ИВЛ</li>
+        <li>При стабилизации 2-3 часа — ставить вопрос о родоразрешении</li>
+      </ol>
+
+      <div class="sop-note-red lb-kaz">
+        <strong>АҚ 160/110 және жоғары болса</strong> — стационарға шұғыл тасымалдау!<br>
+        <strong>Енгізілетін сұйықтықтың максималды мөлшері: 85 мл/сағ!</strong>
+      </div>
+
+      <div class="sop-note-yel lb-kaz">
+        <strong>Стационарға дейінгі жалпы уақыт:</strong> 35-40 минут.
+      </div>
+
+      <div class="sop-note-red lb-rus">
+        <strong>При АД 160/110 и выше</strong> — транспортировать в стационар экстренно!<br>
+        <strong>Максимальное количество вводимой жидкости: 85 мл/час!</strong>
+      </div>
+
+      <div class="sop-note-yel lb-rus">
+        <strong>Общее время до госпитализации:</strong> 35-40 минут.
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span data-kaz="Жедел медициналық көмек станциясы" data-rus="Станция скорой медицинской помощи">Жедел медициналық көмек станциясы</span>
+  <br>
+  <span data-kaz="Аккредитация материалдары" data-rus="Материалы аккредитации">Аккредитация материалдары</span>
+</footer>
+
+<script src="lang.js"></script>
+<script>
+  function toggleSop(header) {
+    const card = header.closest('.sop-card');
+    card.classList.toggle('open');
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    initLang();
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      const target = document.getElementById(hash);
+      if (target) {
+        target.classList.add('open');
+        setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
